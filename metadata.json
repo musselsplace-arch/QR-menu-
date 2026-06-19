@@ -1,0 +1,6 @@
+{
+  "name": "Black Cat - Digital Menu",
+  "description": "A refined, pure-white digital menu app with poetic descriptions in Georgian, English, and Russian. Includes an easy top-corner printable QR code card generator.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
