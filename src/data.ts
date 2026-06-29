@@ -56,7 +56,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     price: 24,
     isAvailable: true,
     tags: ['ვეგეტარიანული', 'საფირმო'],
-    image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'burrata-berries',
@@ -67,7 +67,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     price: 34,
     isAvailable: true,
     tags: ['ვეგეტარიანული'],
-    image: 'https://images.unsplash.com/photo-1592417817098-8f3d6eb19675?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1608897013039-887f21d8c804?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'baked-camembert',
@@ -78,7 +78,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     price: 36,
     isAvailable: true,
     tags: ['ვეგეტარიანული', 'ცხელი'],
-    image: 'https://images.unsplash.com/photo-1541532713592-79a0317b6b77?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1608686207856-001b95cf60ca?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'assorted-bruschetta',
@@ -89,7 +89,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     price: 29,
     isAvailable: true,
     tags: ['ასორტი', 'პოპულარული'],
-    image: 'https://images.unsplash.com/photo-1509722747041-616f39b57569?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1572656631137-7935297eff55?auto=format&fit=crop&w=500&h=500&q=80',
   },
 
   // SALADS
@@ -102,7 +102,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     price: 28,
     isAvailable: true,
     tags: ['ვეგეტარიანული', 'ჯანსაღი'],
-    image: 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'shrimp-salad',
@@ -113,7 +113,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     price: 38,
     isAvailable: true,
     tags: ['ზღვის პროდუქტები', 'პიკანტური'],
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1551248429-40975aa4de74?auto=format&fit=crop&w=500&h=500&q=80',
   },
 
   // SANDWICHES
@@ -126,7 +126,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     price: 36,
     isAvailable: true,
     tags: ['პოპულარული'],
-    image: 'https://images.unsplash.com/photo-1553909489-cd47e0907980?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1549611016-3a70d82b5040?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'prosciutto-sandwich',
@@ -137,7 +137,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     price: 28,
     isAvailable: true,
     tags: ['იტალიური კლასიკა'],
-    image: 'https://images.unsplash.com/photo-1509722747041-616f39b57569?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1522244459694-ade497d76fa6?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'salmon-sandwich',
@@ -148,7 +148,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     price: 32,
     isAvailable: true,
     tags: ['ზღვის პროდუქტები', 'ჯანსაღი'],
-    image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1601050690597-df056fb4ce78?auto=format&fit=crop&w=500&h=500&q=80',
   },
 
   // WINE BITES & PLATTERS
@@ -161,7 +161,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     price: 42,
     isAvailable: true,
     tags: ['გურმანი', 'ღვინისთვის'],
-    image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'salmon-sashimi',
@@ -172,7 +172,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     price: 36,
     isAvailable: true,
     tags: ['ზღვის პროდუქტები', 'მინიმალისტური'],
-    image: 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'baked-oysters',
@@ -183,7 +183,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     price: 45,
     isAvailable: true,
     tags: ['ზღვის პროდუქტები', 'ექსკლუზივი'],
-    image: 'https://images.unsplash.com/photo-1553618551-fcd68c812dd0?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'seared-octopus',
@@ -194,7 +194,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     price: 58,
     isAvailable: true,
     tags: ['დელიკატესი', 'პოპულარული'],
-    image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'cheese-platter',
@@ -205,7 +205,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     price: 55,
     isAvailable: true,
     tags: ['ასორტი', 'ვეგეტარიანული'],
-    image: 'https://images.unsplash.com/photo-1626897505254-e0f811aa9bf7?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1630132274431-b3b48416ca31?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'meat-platter',
@@ -216,31 +216,31 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     price: 58,
     isAvailable: true,
     tags: ['ასორტი', 'ღვინისთვის'],
-    image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1541544741938-0af808871cc0?auto=format&fit=crop&w=500&h=500&q=80',
   },
 
   // DESSERTS
   {
-    id: 'san-sebastian',
-    nameGeo: 'სან-სებასტიანი',
-    nameEng: 'San Sebastian',
+    id: 'cheesecake',
+    nameGeo: 'ჩიზქეიქი',
+    nameEng: 'Cheesecake',
     category: 'desserts',
-    description: 'ლეგენდარული ბასკური ჩიზქეიქი შიგნიდან მდნარი, კრემოვანი ტექსტურითა და კარამელიზებული ზედაპირით. მიირთმევა ჩვენს საფირმო თბილი კენკრის სოუსთან ერთად.',
+    description: 'კლასიკური ნაზი ჩიზქეიქი ხავერდოვანი კრემოვანი ტექსტურითა და ხრაშუნა ორცხობილის ძირით. მიირთმევა ჩვენს საფირმო თბილი კენკრის სოუსთან ერთად.',
     price: 18,
     isAvailable: true,
     tags: ['ტკბილი', 'ბესტსელერი'],
-    image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
-    id: 'sea-salt-brownie',
-    nameGeo: 'ბრაუნი ზღვის მარილით',
-    nameEng: 'Brownie with Sea Salt',
+    id: 'tiramisu',
+    nameGeo: 'ტირამუსი',
+    nameEng: 'Tiramisu',
     category: 'desserts',
-    description: 'მდიდარი მუქი შოკოლადის ბრაუნი, მოხალული თხილითა და ფსტებით, დასრულებული გამორჩეული მალდონის მარილით, რომელიც აძლიერებს შოკოლადის სიღრმეს.',
+    description: 'საუცხოო იტალიური დესერტი. ყავაში გაჟღენთილი სავოიარდის ნამცხვარი, მსუბუქი მასკარპონეს კრემითა და არომატული კაკაოს ფხვნილით.',
     price: 16,
     isAvailable: true,
     tags: ['ტკბილი'],
-    image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&w=500&h=500&q=80',
   },
 
   // COFFEE & DRINKS
@@ -253,7 +253,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     price: 6,
     isAvailable: true,
     tags: ['ცხელი', 'კოფეინი'],
-    image: 'https://images.unsplash.com/photo-1510707577719-ee7c2165749a?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1510707577719-ee7c2165749a?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'americano',
@@ -264,7 +264,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     price: 7,
     isAvailable: true,
     tags: ['ცხელი', 'კოფეინი'],
-    image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'cappuccino-small',
@@ -275,7 +275,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     price: 9,
     isAvailable: true,
     tags: ['ცხელი', 'რძით'],
-    image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'cappuccino-large',
@@ -286,7 +286,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     price: 10,
     isAvailable: true,
     tags: ['ცხელი', 'რძით'],
-    image: 'https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'flat-white',
@@ -297,7 +297,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     price: 10,
     isAvailable: true,
     tags: ['ცხელი', 'ძლიერი'],
-    image: 'https://images.unsplash.com/photo-1577968897866-be573521c453?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1577968897866-be573521c453?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'latte',
@@ -308,7 +308,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     price: 12,
     isAvailable: true,
     tags: ['ცხელი', 'ნაზი'],
-    image: 'https://images.unsplash.com/photo-1570968915860-54d5c301fc9f?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1570968915860-54d5c301fc9f?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'iced-americano',
@@ -319,7 +319,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     price: 8,
     isAvailable: true,
     tags: ['ცივი', 'კოფეინი'],
-    image: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'iced-latte',
@@ -330,7 +330,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     price: 12,
     isAvailable: true,
     tags: ['ცივი', 'ნაზი'],
-    image: 'https://images.unsplash.com/photo-1461023053936-af5ff4a49fc3?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1461023053936-af5ff4a49fc3?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'milk',
@@ -341,7 +341,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     price: 2,
     isAvailable: true,
     tags: ['დამატება'],
-    image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=500&h=500&q=80',
   },
 
   // WHITE WINE (ქართული და იტალიური თეთრი ღვინოები)
@@ -351,12 +351,12 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     nameEng: 'Chiche • Tsinandali',
     category: 'wine',
     description: 'კლასიკური თეთრი მშრალი ღვინო, წინანდლის მიკროზონიდან. ხასიათდება ციტრუსებისა და თეთრი ყვავილების დახვეწილი არომატებით.',
-    price: 13, // Standard fallback
+    price: 13,
     priceGlass: 13,
     priceBottle: 54,
     isAvailable: true,
     tags: ['თეთრი კლასიკური', '2024'],
-    image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'damilie-kisi',
@@ -369,7 +369,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     priceBottle: 78,
     isAvailable: true,
     tags: ['თეთრი კლასიკური', '2025'],
-    image: 'https://images.unsplash.com/photo-1569919659476-f0852f6834b7?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1569919659476-f0852f6834b7?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'first-winery-khikhvi',
@@ -382,7 +382,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     priceBottle: 75,
     isAvailable: true,
     tags: ['თეთრი კლასიკური', 'კლასიკი'],
-    image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'first-winery-kisi-classic',
@@ -395,7 +395,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     priceBottle: 90,
     isAvailable: true,
     tags: ['თეთრი კლასიკური', 'პრემიუმი'],
-    image: 'https://images.unsplash.com/photo-1569919659476-f0852f6834b7?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1516594915697-87eb3b1c14ea?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'me-wine-chardonnay',
@@ -408,7 +408,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     priceBottle: 90,
     isAvailable: true,
     tags: ['თეთრი კლასიკური', '2022'],
-    image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1559261273-6fd47067c1ee?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'chiora-tsolikouri',
@@ -421,7 +421,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     priceBottle: 84,
     isAvailable: true,
     tags: ['თეთრი კლასიკური', '2023'],
-    image: 'https://images.unsplash.com/photo-1569919659476-f0852f6834b7?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1584225065152-4a1454aa3d4e?auto=format&fit=crop&w=500&h=500&q=80',
   },
 
   // QVEVRI & AMBER (ქვევრი & ქარვისფერი)
@@ -436,7 +436,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     priceBottle: 75,
     isAvailable: true,
     tags: ['ქვევრი & ქარვისფერი', '2023'],
-    image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1613564834361-9436948817d1?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'first-winery-kisi-qvevri',
@@ -449,7 +449,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     priceBottle: 84,
     isAvailable: true,
     tags: ['ქვევრი & ქარვისფერი', 'ტრადიციული'],
-    image: 'https://images.unsplash.com/photo-1569919659476-f0852f6834b7?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1594498541225-52ac5c2104bd?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'first-winery-khikhvi-qvevri',
@@ -462,7 +462,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     priceBottle: 84,
     isAvailable: true,
     tags: ['ქვევრი & ქარვისფერი', 'მდიდარი'],
-    image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1543418219-44e2bf8516ee?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'tevza-chinuri',
@@ -475,7 +475,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     priceBottle: 78,
     isAvailable: true,
     tags: ['ქვევრი & ქარვისფერი', '2022'],
-    image: 'https://images.unsplash.com/photo-1569919659476-f0852f6834b7?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'chiche-4-grafini',
@@ -488,7 +488,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     priceBottle: 69,
     isAvailable: true,
     tags: ['ქვევრი & ქარვისფერი', 'ნაკრები'],
-    image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1562601519-1b4de05365d5?auto=format&fit=crop&w=500&h=500&q=80',
   },
 
   // RED WINE (წითელი ღვინოები)
@@ -503,7 +503,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     priceBottle: 75,
     isAvailable: true,
     tags: ['წითელი ღვინოები', '2022'],
-    image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'first-winery-saperavi-classic',
@@ -516,7 +516,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     priceBottle: 66,
     isAvailable: true,
     tags: ['წითელი ღვინოები', 'პოპულარული'],
-    image: 'https://images.unsplash.com/photo-1528826722302-d6084efcd8e5?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'first-winery-saperavi-qvevri',
@@ -529,7 +529,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     priceBottle: 90,
     isAvailable: true,
     tags: ['წითელი ღვინოები', 'ქვევრი'],
-    image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1528826722302-d6084efcd8e5?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'damilie-dzelshavi',
@@ -542,7 +542,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     priceBottle: 87,
     isAvailable: true,
     tags: ['წითელი ღვინოები', '2024'],
-    image: 'https://images.unsplash.com/photo-1528826722302-d6084efcd8e5?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1553187184-d227914619ee?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'critera-primitivo',
@@ -555,7 +555,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     priceBottle: 78,
     isAvailable: true,
     tags: ['წითელი ღვინოები', 'იტალიური'],
-    image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1481833761820-0509d3217039?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'corte-badin',
@@ -568,7 +568,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     priceBottle: 72,
     isAvailable: true,
     tags: ['წითელი ღვინოები', 'გურმანი'],
-    image: 'https://images.unsplash.com/photo-1528826722302-d6084efcd8e5?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'camponi-rosso',
@@ -581,7 +581,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     priceBottle: 72,
     isAvailable: true,
     tags: ['წითელი ღვინოები', '2019'],
-    image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1560512823-829485b8bf24?auto=format&fit=crop&w=500&h=500&q=80',
   },
 
   // SPARKLING & PET-NAT (ცქრიალა & პეტნატი)
@@ -596,7 +596,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     priceBottle: 90,
     isAvailable: true,
     tags: ['ცქრიალა & პეტნატი', 'ექსტრა მშრალი'],
-    image: 'https://images.unsplash.com/photo-1594498653385-d5172b532c00?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1594498653385-d5172b532c00?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'mille-bolle-rose',
@@ -609,7 +609,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     priceBottle: 69,
     isAvailable: true,
     tags: ['ცქრიალა & პეტნატი', 'როზე ბრუტი'],
-    image: 'https://images.unsplash.com/photo-1594498653385-d5172b532c00?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'damilie-petnat-tsolikouri',
@@ -622,7 +622,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     priceBottle: 81,
     isAvailable: true,
     tags: ['ცქრიალა & პეტნატი', '2024'],
-    image: 'https://images.unsplash.com/photo-1594498653385-d5172b532c00?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1516594915697-87eb3b1c14ea?auto=format&fit=crop&w=500&h=500&q=80',
   },
 
   // ROSÉ (როზე)
@@ -637,7 +637,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     priceBottle: 54,
     isAvailable: true,
     tags: ['როზე', '2024'],
-    image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=500&h=500&q=80',
   },
   {
     id: 'antieri-rose',
@@ -650,7 +650,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     priceBottle: 108,
     isAvailable: true,
     tags: ['როზე', 'პრემიუმი'],
-    image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=500&q=80',
+    image: 'https://images.unsplash.com/photo-1504198266287-1659872e6590?auto=format&fit=crop&w=500&h=500&q=80',
   },
 ];
 

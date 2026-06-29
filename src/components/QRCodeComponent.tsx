@@ -17,7 +17,7 @@ export default function QRCodeComponent({ table, appUrl, onSimulateScan }: QRCod
   // e.g. https://your-app-url.com?table=1
   // We utilize the window.location.origin in the browser, falling back to appUrl.
   const originUrl = typeof window !== 'undefined' ? window.location.origin : appUrl;
-  const targetUrl = `${originUrl}?table=${table.id}`;
+  const targetUrl = `${originUrl}?table=${table.number}`;
 
   const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&color=${qrColor.replace('#', '')}&data=${encodeURIComponent(targetUrl)}`;
 

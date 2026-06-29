@@ -2,11 +2,273 @@ import React, { useState } from 'react';
 import { 
   Plus, Edit, Trash2, Check, X, ToggleLeft, ToggleRight, 
   Settings, UserCheck, HelpCircle, ChevronRight, MessageSquare, 
-  Store, ListFilter, AlertCircle, ChefHat, Tag, DollarSign, RefreshCw, BellRing, Star
+  Store, ListFilter, AlertCircle, ChefHat, Tag, DollarSign, RefreshCw, BellRing, Star, Upload, Image as ImageIcon
 } from 'lucide-react';
 import { MenuItem, Table, Category, Review } from '../types';
 import { CATEGORIES } from '../data';
 import QRCodeComponent from './QRCodeComponent';
+
+// Curated high-quality Unsplash photography presets for Georgian & European culinary bar menu
+const PHOTO_PRESETS = [
+  {
+    name: 'ომლეტი / საუზმე',
+    url: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=500&h=500&q=80'
+  },
+  {
+    name: 'ბურატა / ყველი',
+    url: 'https://images.unsplash.com/photo-1608897013039-887f21d8c804?auto=format&fit=crop&w=500&h=500&q=80'
+  },
+  {
+    name: 'კამამბერი / თაფლით',
+    url: 'https://images.unsplash.com/photo-1608686207856-001b95cf60ca?auto=format&fit=crop&w=500&h=500&q=80'
+  },
+  {
+    name: 'ბრუსკეტა / პომიდვრით',
+    url: 'https://images.unsplash.com/photo-1572656631137-7935297eff55?auto=format&fit=crop&w=500&h=500&q=80'
+  },
+  {
+    name: 'სალათა სტრაჩატელა',
+    url: 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=500&h=500&q=80'
+  },
+  {
+    name: 'კრევეტები აზიურად',
+    url: 'https://images.unsplash.com/photo-1551248429-40975aa4de74?auto=format&fit=crop&w=500&h=500&q=80'
+  },
+  {
+    name: 'სენდვიჩი ანგუსი',
+    url: 'https://images.unsplash.com/photo-1549611016-3a70d82b5040?auto=format&fit=crop&w=500&h=500&q=80'
+  },
+  {
+    name: 'ორაგულის ტოსტი',
+    url: 'https://images.unsplash.com/photo-1601050690597-df056fb4ce78?auto=format&fit=crop&w=500&h=500&q=80'
+  },
+  {
+    name: 'ანგუსის ტარტარი',
+    url: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=500&h=500&q=80'
+  },
+  {
+    name: 'ოქტოპუსი / კარტოფილი',
+    url: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=500&h=500&q=80'
+  },
+  {
+    name: 'ევროპული ყველის დაფა',
+    url: 'https://images.unsplash.com/photo-1630132274431-b3b48416ca31?auto=format&fit=crop&w=500&h=500&q=80'
+  },
+  {
+    name: 'ხორცის ასორტი',
+    url: 'https://images.unsplash.com/photo-1541544741938-0af808871cc0?auto=format&fit=crop&w=500&h=500&q=80'
+  },
+  {
+    name: 'ჩიზქეიქი კენკრით',
+    url: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=500&h=500&q=80'
+  },
+  {
+    name: 'ტირამირუსი',
+    url: 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&w=500&h=500&q=80'
+  },
+  {
+    name: 'ესპრესო / ყავა',
+    url: 'https://images.unsplash.com/photo-1510707577719-ee7c2165749a?auto=format&fit=crop&w=500&h=500&q=80'
+  },
+  {
+    name: 'ცივი ამერიკანო',
+    url: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=500&h=500&q=80'
+  },
+  {
+    name: 'თეთრი ღვინო წინანდალი',
+    url: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=500&h=500&q=80'
+  },
+  {
+    name: 'წითელი ღვინო საფერავი',
+    url: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=500&h=500&q=80'
+  },
+  {
+    name: 'ცქრიალა პროსეკო',
+    url: 'https://images.unsplash.com/photo-1594498653385-d5172b532c00?auto=format&fit=crop&w=500&h=500&q=80'
+  },
+  {
+    name: 'ვარდისფერი როზე',
+    url: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=500&h=500&q=80'
+  }
+];
+
+interface ImageWidgetProps {
+  currentImage: string;
+  onImageChange: (image: string) => void;
+  label?: string;
+}
+
+function ImageWidget({ currentImage, onImageChange, label = 'კერძის ფოტო' }: ImageWidgetProps) {
+  const [isUploading, setIsUploading] = useState(false);
+  const [showPresets, setShowPresets] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const compressedBase64 = await compressImage(file);
+      onImageChange(compressedBase64);
+    } catch (err) {
+      console.error('Failed to upload and compress image:', err);
+      alert('ფოტოს ატვირთვა ვერ მოხერხდა. გთხოვთ სცადოთ სხვა ფაილი.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const compressImage = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 500;
+          const MAX_HEIGHT = 500;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+            resolve(compressedDataUrl);
+          } else {
+            resolve(event.target?.result as string);
+          }
+        };
+        img.onerror = (err) => reject(err);
+      };
+      reader.onerror = (err) => reject(err);
+    });
+  };
+
+  return (
+    <div className="space-y-2 border border-slate-100 rounded-2xl p-4 bg-slate-50/50">
+      <div className="flex justify-between items-center mb-1">
+        <label className="text-[10px] font-bold text-slate-505 block uppercase tracking-wider text-slate-500">
+          {label}
+        </label>
+        <button
+          type="button"
+          onClick={() => setShowPresets(!showPresets)}
+          className="text-[10px] text-amber-700 font-bold hover:underline cursor-pointer flex items-center gap-1 bg-transparent border-none"
+        >
+          {showPresets ? '❌ გალერეის დახურვა' : '🖼️ მზა გალერეიდან არჩევა'}
+        </button>
+      </div>
+
+      {showPresets && (
+        <div className="bg-white border border-slate-200 rounded-xl p-3 space-y-2 max-h-[190px] overflow-y-auto animate-fadeIn mb-2">
+          <p className="text-[9px] font-black text-slate-400 uppercase tracking-wider">აირჩიეთ მადისაღმძვრელი ფოტო</p>
+          <div className="grid grid-cols-4 gap-2">
+            {PHOTO_PRESETS.map((preset, idx) => (
+              <button
+                key={idx}
+                type="button"
+                title={preset.name}
+                onClick={() => {
+                  onImageChange(preset.url);
+                  setShowPresets(false);
+                }}
+                className={`group relative aspect-square rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
+                  currentImage === preset.url ? 'border-amber-500 scale-95 shadow-sm' : 'border-transparent hover:border-slate-300'
+                }`}
+              >
+                <img
+                  src={preset.url}
+                  alt={preset.name}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute inset-x-0 bottom-0 bg-black/60 py-0.5 px-1 truncate text-[8px] text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                  {preset.name}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="flex gap-4 items-center">
+        {/* Active image thumbnail preview */}
+        <div className="w-16 h-16 rounded-xl overflow-hidden border border-slate-200 bg-white shadow-3xs shrink-0 relative flex items-center justify-center">
+          {currentImage ? (
+            <img
+              src={currentImage}
+              alt="Preview"
+              className="w-full h-full object-cover"
+              referrerPolicy="no-referrer"
+            />
+          ) : (
+            <span className="text-xl">🍽️</span>
+          )}
+          {isUploading && (
+            <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-3xs flex items-center justify-center">
+              <span className="text-[10px] text-white font-bold animate-pulse">იტვირთება...</span>
+            </div>
+          )}
+        </div>
+
+        {/* Upload operations panel */}
+        <div className="flex-1 space-y-2">
+          <div className="flex flex-wrap gap-2">
+            {/* Direct hidden input trigger */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileUpload}
+              accept="image/*"
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="py-1.5 px-3 bg-slate-900 border-none hover:bg-slate-800 text-white font-bold text-[10px] rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+            >
+              <Upload className="w-3.5 h-3.5 text-amber-500" />
+              <span>საკუთარი ფოტოს ატვირთვა</span>
+            </button>
+          </div>
+
+          <div className="space-y-1">
+            <input
+              type="text"
+              placeholder="ან ჩაწერეთ ფოტოს ინტერნეტ ლინკი (URL)..."
+              value={currentImage && currentImage.startsWith('data:') ? '' : currentImage}
+              onChange={(e) => onImageChange(e.target.value)}
+              className="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-[10px] focus:outline-none"
+            />
+            {currentImage && currentImage.startsWith('data:') && (
+              <span className="text-[8px] text-slate-500 font-bold block bg-slate-100 py-0.5 px-1.5 rounded-sm inline-block">
+                ✓ ატვირთულია ლოკალური ფაილი (Base64)
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 interface RestaurateurDashboardProps {
   items: MenuItem[];
@@ -22,6 +284,9 @@ interface RestaurateurDashboardProps {
   onClearAllNotifications: () => void;
   onTableSelect: (table: Table) => void;
   onSimulateScan: (tableId: string) => void;
+  onAddTable: (name: string, number: number) => void;
+  onDeleteTable: (tableId: string) => void;
+  onUpdateTable: (tableId: string, updatedFields: Partial<Table>) => void;
 }
 
 export default function RestaurateurDashboard({
@@ -37,11 +302,23 @@ export default function RestaurateurDashboard({
   onClearNotification,
   onClearAllNotifications,
   onTableSelect,
-  onSimulateScan
+  onSimulateScan,
+  onAddTable,
+  onDeleteTable,
+  onUpdateTable
 }: RestaurateurDashboardProps) {
   
   const [activeTab, setActiveTab] = useState<'items' | 'tables' | 'notifications' | 'reviews'>('items');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
+  // Table management states
+  const [showAddTableForm, setShowAddTableForm] = useState(false);
+  const [newTableName, setNewTableName] = useState('');
+  const [newTableNumber, setNewTableNumber] = useState<number | ''>('');
+  
+  const [editingTableId, setEditingTableId] = useState<string | null>(null);
+  const [tempTableName, setTempTableName] = useState('');
+  const [tempTableNumber, setTempTableNumber] = useState<number | ''>('');
   
   // Custom item adding state
   const [showAddModal, setShowAddModal] = useState(false);
@@ -117,6 +394,38 @@ export default function RestaurateurDashboard({
   const startEditTableGreeting = (table: Table) => {
     setEditingTableGreetingId(table.id);
     setTempGreetingText(table.activeGreeting || '');
+  };
+
+  const handleAddTableSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTableName.trim() || !newTableNumber) return;
+    onAddTable(newTableName.trim(), Number(newTableNumber));
+    setNewTableName('');
+    setNewTableNumber('');
+    setShowAddTableForm(false);
+  };
+
+  const startEditTable = (table: Table, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingTableId(table.id);
+    setTempTableName(table.name);
+    setTempTableNumber(table.number);
+  };
+
+  const handleUpdateTableSubmit = (tableId: string) => {
+    if (!tempTableName.trim() || !tempTableNumber) return;
+    onUpdateTable(tableId, {
+      name: tempTableName.trim(),
+      number: Number(tempTableNumber)
+    });
+    setEditingTableId(null);
+  };
+
+  const handleDeleteTableClick = (tableId: string, tableName: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (window.confirm(`დარწმუნებული ხართ, რომ გსურთ მაგიდის "${tableName}" წაშლა?`)) {
+      onDeleteTable(tableId);
+    }
   };
 
   const filteredItems = items.filter(item => {
@@ -353,74 +662,184 @@ export default function RestaurateurDashboard({
           {/* Left partition - Live list of Tables */}
           <div className="lg:col-span-6 space-y-4">
             <div className="bg-white border border-slate-205 rounded-2xl p-4">
-              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-widest mb-3 flex items-center gap-2">
-                <span>📍 მაგიდების სია</span>
-              </h3>
+              <div className="flex justify-between items-center mb-4 pb-2 border-b border-slate-100">
+                <h3 className="text-xs font-bold text-slate-800 uppercase tracking-widest flex items-center gap-2">
+                  <span>📍 მაგიდების სია</span>
+                </h3>
+                <button
+                  onClick={() => setShowAddTableForm(!showAddTableForm)}
+                  className="py-1 px-2.5 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-bold rounded-lg flex items-center gap-1 transition-all cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" /> დამატება
+                </button>
+              </div>
+
+              {/* Add Table form panel */}
+              {showAddTableForm && (
+                <form onSubmit={handleAddTableSubmit} className="mb-4 p-3 bg-slate-50 rounded-xl border border-slate-200/60 space-y-3">
+                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">ახალი მაგიდის დამატება</span>
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      type="text"
+                      placeholder="მაგიდის სახელი (მაგ. ტერასა 1)"
+                      required
+                      value={newTableName}
+                      onChange={(e) => setNewTableName(e.target.value)}
+                      className="bg-white border border-slate-250 px-2 py-1.5 rounded-lg text-xs font-medium focus:outline-none focus:border-amber-500 text-slate-800"
+                    />
+                    <input
+                      type="number"
+                      placeholder="ნომერი (მაგ. 6)"
+                      required
+                      value={newTableNumber}
+                      onChange={(e) => setNewTableNumber(e.target.value === '' ? '' : Number(e.target.value))}
+                      className="bg-white border border-slate-250 px-2 py-1.5 rounded-lg text-xs font-medium focus:outline-none focus:border-amber-500 text-slate-800"
+                    />
+                  </div>
+                  <div className="flex justify-end gap-1.5">
+                    <button
+                      type="submit"
+                      className="py-1 px-3 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold rounded-lg cursor-pointer"
+                    >
+                      დამატება
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddTableForm(false)}
+                      className="py-1 px-3 bg-white hover:bg-slate-100 border border-slate-200 text-slate-600 text-[10px] font-bold rounded-lg cursor-pointer"
+                    >
+                      გაუქმება
+                    </button>
+                  </div>
+                </form>
+              )}
               
               <div className="space-y-2.5">
                 {tables.map(table => (
                   <div 
                     key={table.id}
                     onClick={() => onTableSelect(table)}
-                    className={`w-full text-left p-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                    className={`w-full text-left p-3.5 rounded-xl border transition-all cursor-pointer flex flex-col gap-2 ${
                       selectedTableForQR.id === table.id
                         ? 'bg-amber-50/75 border-amber-500/80 shadow-xs'
                         : 'bg-white border-slate-100 hover:border-slate-300'
                     }`}
                   >
-                    <div className="space-y-1 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-xs text-slate-900">{table.name}</span>
-                        {table.status === 'service_requested' && (
-                          <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse" title="Waiter requested"></span>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="space-y-1 flex-1">
+                        {editingTableId === table.id ? (
+                          <div className="space-y-2" onClick={(e) => e.stopPropagation()}>
+                            <div className="grid grid-cols-2 gap-2">
+                              <div>
+                                <label className="text-[9px] text-slate-400 font-bold uppercase block mb-0.5">სახელი</label>
+                                <input
+                                  type="text"
+                                  value={tempTableName}
+                                  onChange={(e) => setTempTableName(e.target.value)}
+                                  className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1 text-xs focus:outline-none text-slate-800"
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[9px] text-slate-400 font-bold uppercase block mb-0.5">ნომერი</label>
+                                <input
+                                  type="number"
+                                  value={tempTableNumber || ''}
+                                  onChange={(e) => setTempTableNumber(e.target.value === '' ? '' : Number(e.target.value))}
+                                  className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1 text-xs focus:outline-none text-slate-800"
+                                />
+                              </div>
+                            </div>
+                            <div className="flex gap-1.5 justify-end">
+                              <button
+                                onClick={() => handleUpdateTableSubmit(table.id)}
+                                className="px-2.5 py-1 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 text-[10px] font-bold"
+                              >
+                                შენახვა
+                              </button>
+                              <button
+                                onClick={() => setEditingTableId(null)}
+                                className="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 text-[10px] font-bold"
+                              >
+                                გაუქმება
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-xs text-slate-900">
+                              {table.name} <span className="text-slate-400 font-mono font-medium text-[10px] ml-1">#{table.number}</span>
+                            </span>
+                            {table.status === 'service_requested' && (
+                              <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" title="Waiter requested"></span>
+                            )}
+                          </div>
+                        )}
+                        
+                        {/* Interactive Greeting editor inline */}
+                        {editingTableGreetingId === table.id ? (
+                          <div className="flex items-center gap-1.5 mt-2" onClick={(e) => e.stopPropagation()}>
+                            <input
+                              type="text"
+                              value={tempGreetingText}
+                              onChange={(e) => setTempGreetingText(e.target.value)}
+                              className="flex-1 bg-white border border-slate-200 rounded-lg px-2 py-1 text-[11px] focus:outline-none text-slate-800"
+                              placeholder="მისალმების ტექსტი..."
+                            />
+                            <button 
+                              onClick={() => handleSaveTableGreeting(table.id)}
+                              className="p-1.5 bg-slate-900 text-white rounded-lg hover:bg-slate-800"
+                            >
+                              <Check className="w-3 h-3" />
+                            </button>
+                            <button 
+                              onClick={() => setEditingTableGreetingId(null)}
+                              className="p-1.5 bg-slate-105 border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-100"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ) : !editingTableId && (
+                          <div className="flex items-center justify-between mt-1">
+                            <p className="text-[11px] text-slate-500 italic truncate max-w-[180px]">
+                              {table.activeGreeting ? `„${table.activeGreeting}“` : 'მისალმება არ არის დაყენებული'}
+                            </p>
+                          </div>
                         )}
                       </div>
-                      
-                      {/* Interactive Greeting editor inline */}
-                      {editingTableGreetingId === table.id ? (
-                        <div className="flex items-center gap-1.5 mt-2" onClick={(e) => e.stopPropagation()}>
-                          <input
-                            type="text"
-                            value={tempGreetingText}
-                            onChange={(e) => setTempGreetingText(e.target.value)}
-                            className="flex-1 bg-white border border-slate-200 rounded-lg px-2 py-1 text-[11px] focus:outline-none"
-                            placeholder="მისალმების ტექსტი..."
-                          />
-                          <button 
-                            onClick={() => handleSaveTableGreeting(table.id)}
-                            className="p-1.5 bg-slate-900 text-white rounded-lg hover:bg-slate-800"
-                          >
-                            <Check className="w-3 h-3" />
-                          </button>
-                          <button 
-                            onClick={() => setEditingTableGreetingId(null)}
-                            className="p-1.5 bg-slate-105 border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-100"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="flex items-center justify-between mt-1">
-                          <p className="text-[11px] text-slate-500 italic truncate max-w-[280px]">
-                            {table.activeGreeting ? `„${table.activeGreeting}“` : 'მისალმება არ არის დაყენებული'}
-                          </p>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              startEditTableGreeting(table);
-                            }}
-                            className="text-[10px] font-bold text-amber-700 hover:text-amber-800 hover:underline px-2"
-                          >
-                            შეცვლა
-                          </button>
-                        </div>
-                      )}
-                    </div>
 
-                    <div className="shrink-0 flex items-center gap-1.5">
-                      <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform ${
-                        selectedTableForQR.id === table.id ? 'translate-x-0.5 text-amber-600' : ''
-                      }`} />
+                      <div className="shrink-0 flex items-center gap-1">
+                        {editingTableId !== table.id && (
+                          <>
+                            <button
+                              onClick={(e) => startEditTable(table, e)}
+                              className="p-1.5 text-slate-400 hover:text-slate-750 hover:bg-slate-100 rounded-lg transition-all"
+                              title="რედაქტირება"
+                            >
+                              <Edit className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                startEditTableGreeting(table);
+                              }}
+                              className="p-1 px-2 text-[10px] font-bold text-amber-700 hover:bg-amber-100/50 rounded-lg transition-all"
+                              title="მისალმების შეცვლა"
+                            >
+                              მისალმება
+                            </button>
+                            <button
+                              onClick={(e) => handleDeleteTableClick(table.id, table.name, e)}
+                              className="p-1.5 text-rose-550 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-all"
+                              title="წაშლა"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </>
+                        )}
+                        <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform ${
+                          selectedTableForQR.id === table.id ? 'translate-x-0.5 text-amber-600' : ''
+                        }`} />
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -577,7 +996,7 @@ export default function RestaurateurDashboard({
 
               <div className="grid grid-cols-2 gap-3">
                 {editingItem.category === 'wine' ? (
-                  <div className="col-span-1 grid grid-cols-2 gap-2">
+                  <div className="col-span-2 grid grid-cols-2 gap-2">
                     <div>
                       <label className="text-[10px] font-bold text-slate-500 block mb-1 uppercase tracking-wider">ჭიქა (₾)</label>
                       <input
@@ -598,7 +1017,7 @@ export default function RestaurateurDashboard({
                     </div>
                   </div>
                 ) : (
-                  <div>
+                  <div className="col-span-2">
                     <label className="text-[10px] font-bold text-slate-500 block mb-1 uppercase tracking-wider">ფასი (GEL)</label>
                     <input
                       type="number"
@@ -610,16 +1029,14 @@ export default function RestaurateurDashboard({
                     />
                   </div>
                 )}
-                <div>
-                  <label className="text-[10px] font-bold text-slate-500 block mb-1 uppercase tracking-wider">სურათის ბმული</label>
-                  <input
-                    type="text"
-                    value={editingItem.image}
-                    onChange={(e) => setEditingItem({ ...editingItem, image: e.target.value })}
-                    required
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs truncate"
-                  />
-                </div>
+              </div>
+
+              <div>
+                <ImageWidget
+                  currentImage={editingItem.image}
+                  onImageChange={(img) => setEditingItem({ ...editingItem, image: img })}
+                  label="კერძის ფოტო"
+                />
               </div>
 
               <div>
@@ -751,13 +1168,10 @@ export default function RestaurateurDashboard({
               </div>
 
               <div>
-                <label className="text-[10px] font-bold text-slate-500 block mb-1 uppercase tracking-wider">სურათის ლინკი</label>
-                <input
-                  type="text"
-                  placeholder="https://images.unsplash.com/..."
-                  value={newItemImage}
-                  onChange={(e) => setNewItemImage(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none"
+                <ImageWidget
+                  currentImage={newItemImage}
+                  onImageChange={(img) => setNewItemImage(img)}
+                  label="კერძის ფოტო"
                 />
               </div>
 

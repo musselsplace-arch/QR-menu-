@@ -1,0 +1,118 @@
+{
+  "entities": {
+    "MenuItem": {
+      "title": "MenuItem",
+      "description": "A menu item offered by the restaurant",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier" },
+        "nameGeo": { "type": "string", "description": "Georgian name" },
+        "nameEng": { "type": "string", "description": "English name" },
+        "category": { "type": "string", "description": "Category name" },
+        "description": { "type": "string", "description": "Artistic description of the dish" },
+        "price": { "type": "number", "description": "Price in Lari" },
+        "priceGlass": { "type": "number", "description": "Optional price per glass" },
+        "priceBottle": { "type": "number", "description": "Optional price per bottle" },
+        "isAvailable": { "type": "boolean", "description": "Availability status" },
+        "tags": { "type": "array", "description": "Tags like Vegetarian, Spicy, etc." },
+        "image": { "type": "string", "description": "URL or identifier of the image" }
+      },
+      "required": ["id", "nameGeo", "nameEng", "category", "description", "price", "isAvailable", "tags", "image"]
+    },
+    "Table": {
+      "title": "Table",
+      "description": "A restaurant table with physical QR code identifier",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique table identifier" },
+        "number": { "type": "number", "description": "Physical table number" },
+        "name": { "type": "string", "description": "Table display name" },
+        "status": { "type": "string", "enum": ["free", "occupied", "service_requested"] },
+        "activeGreeting": { "type": "string", "description": "Custom welcome message shown on guest load" },
+        "currentOrderId": { "type": "string", "description": "Active linked order ID" }
+      },
+      "required": ["id", "number", "name", "status"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "Guest review and rating",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique review identifier" },
+        "rating": { "type": "number", "description": "Rating score (1-5)" },
+        "comment": { "type": "string", "description": "User review comment" },
+        "guestName": { "type": "string", "description": "Reviewer display name" },
+        "date": { "type": "string", "description": "Friendly string date representation" },
+        "timestamp": { "type": "number", "description": "Unix milliseconds for sorting" }
+      },
+      "required": ["id", "rating", "comment", "guestName", "date"]
+    },
+    "CartItem": {
+      "title": "CartItem",
+      "description": "Item added to an order list",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Generated unique cart item ID" },
+        "menuItemId": { "type": "string", "description": "Reference to MenuItem ID" },
+        "name": { "type": "string", "description": "Local/translated name" },
+        "price": { "type": "number", "description": "Unit price" },
+        "quantity": { "type": "number", "description": "Selected quantity" },
+        "selectedOption": { "type": "string", "enum": ["glass", "bottle", "standard"] }
+      },
+      "required": ["id", "menuItemId", "name", "price", "quantity"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Table order with items list",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique order ID" },
+        "tableId": { "type": "string", "description": "Table ID" },
+        "tableNumber": { "type": "number", "description": "Table number" },
+        "items": { "type": "array", "description": "List of ordered items" },
+        "totalPrice": { "type": "number", "description": "Total order price" },
+        "status": { "type": "string", "enum": ["pending", "accepted", "completed", "declined"] },
+        "estimatedWaitMinutes": { "type": "number", "description": "Minutes before ready" },
+        "createdAt": { "type": "string", "description": "Human readable creation time" },
+        "timestamp": { "type": "number", "description": "Unix timestamp for ordering" },
+        "isViewedByTablet": { "type": "boolean", "description": "If viewed on screen" }
+      },
+      "required": ["id", "tableId", "tableNumber", "items", "totalPrice", "status", "createdAt"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "Waiter call notification",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique notification ID" },
+        "tableNumber": { "type": "number", "description": "Table number requesting help" },
+        "requestType": { "type": "string", "description": "Type of requested service" },
+        "time": { "type": "string", "description": "Readable time representation" },
+        "timestamp": { "type": "number", "description": "Unix timestamp" }
+      },
+      "required": ["id", "tableNumber", "requestType", "time"]
+    }
+  },
+  "firestore": {
+    "items/{itemId}": {
+      "schema": "MenuItem",
+      "description": "Collection of all restaurant menu items"
+    },
+    "tables/{tableId}": {
+      "schema": "Table",
+      "description": "Collection of physical dining tables"
+    },
+    "reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "User feedback and reviews"
+    },
+    "orders/{orderId}": {
+      "schema": "Order",
+      "description": "Customer table orders"
+    },
+    "notifications/{notificationId}": {
+      "schema": "Notification",
+      "description": "Active calls to wait staff from dining tables"
+    }
+  }
+}

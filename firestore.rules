@@ -1,0 +1,130 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global default-deny catch-all to secure any unspecified paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper utilities for validations
+    function isValidId(id) { 
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); 
+    }
+
+    function isNumeric(val) {
+      return val is int || val is float;
+    }
+
+    function incoming(request) { 
+      return request.resource.data; 
+    }
+
+    function existing(resource) { 
+      return resource.data; 
+    }
+
+    // --- MenuItem validation ---
+    function isValidMenuItem(data) {
+      return data.keys().hasAll(['id', 'nameGeo', 'nameEng', 'category', 'description', 'price', 'isAvailable', 'tags', 'image'])
+        && data.id is string && data.id.size() <= 100
+        && data.nameGeo is string && data.nameGeo.size() <= 300
+        && data.nameEng is string && data.nameEng.size() <= 300
+        && data.category is string && data.category.size() <= 100
+        && data.description is string && data.description.size() <= 2000
+        && isNumeric(data.price) && data.price >= 0
+        && data.isAvailable is bool
+        && data.tags is list && data.tags.size() <= 10
+        && data.image is string && data.image.size() <= 1000;
+    }
+
+    match /items/{itemId} {
+      allow read: if true;
+      allow create, update: if isValidId(itemId) && isValidMenuItem(incoming(request));
+      allow delete: if isValidId(itemId);
+    }
+
+    // --- Table validation ---
+    function isValidTable(data) {
+      return data.keys().hasAll(['id', 'number', 'name', 'status'])
+        && data.id is string && data.id.size() <= 100
+        && isNumeric(data.number) && data.number >= 1
+        && data.name is string && data.name.size() <= 100
+        && data.status is string && (data.status == 'free' || data.status == 'occupied' || data.status == 'service_requested')
+        && (!data.keys().contains('activeGreeting') || (data.activeGreeting is string && data.activeGreeting.size() <= 1000))
+        && (!data.keys().contains('currentOrderId') || (data.currentOrderId is string && data.currentOrderId.size() <= 100));
+    }
+
+    match /tables/{tableId} {
+      allow read: if true;
+      allow create: if isValidId(tableId) && isValidTable(incoming(request));
+      allow update: if isValidId(tableId) && isValidTable(incoming(request));
+      allow delete: if isValidId(tableId);
+    }
+
+    // --- Review validation ---
+    function isValidReview(data) {
+      return data.keys().hasAll(['id', 'rating', 'comment', 'guestName', 'date'])
+        && data.id is string && data.id.size() <= 100
+        && isNumeric(data.rating) && data.rating >= 1 && data.rating <= 5
+        && data.comment is string && data.comment.size() <= 2000
+        && data.guestName is string && data.guestName.size() <= 200
+        && data.date is string && data.date.size() <= 100
+        && (!data.keys().contains('timestamp') || isNumeric(data.timestamp));
+    }
+
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isValidId(reviewId) && isValidReview(incoming(request));
+      allow update, delete: if false; // Reviews are immortal once written by guests
+    }
+
+    // --- Order validation ---
+    function isValidCartItem(item) {
+      return item is map 
+        && item.keys().hasAll(['id', 'menuItemId', 'name', 'price', 'quantity'])
+        && item.id is string && item.id.size() <= 100
+        && item.menuItemId is string && item.menuItemId.size() <= 100
+        && item.name is string && item.name.size() <= 300
+        && isNumeric(item.price) && item.price >= 0
+        && isNumeric(item.quantity) && item.quantity >= 1
+        && (!item.keys().contains('selectedOption') || (item.selectedOption is string && item.selectedOption.size() <= 50));
+    }
+
+    function isValidOrder(data) {
+      return data.keys().hasAll(['id', 'tableId', 'tableNumber', 'items', 'totalPrice', 'status', 'createdAt'])
+        && data.id is string && data.id.size() <= 100
+        && data.tableId is string && data.tableId.size() <= 100
+        && isNumeric(data.tableNumber) && data.tableNumber >= 1
+        && data.items is list && data.items.size() <= 100
+        && isNumeric(data.totalPrice) && data.totalPrice >= 0
+        && data.status is string && (data.status == 'pending' || data.status == 'accepted' || data.status == 'completed' || data.status == 'declined')
+        && data.createdAt is string && data.createdAt.size() <= 100
+        && (!data.keys().contains('timestamp') || isNumeric(data.timestamp))
+        && (!data.keys().contains('isViewedByTablet') || data.isViewedByTablet is bool)
+        && (!data.keys().contains('estimatedWaitMinutes') || (isNumeric(data.estimatedWaitMinutes) && data.estimatedWaitMinutes >= 0));
+    }
+
+    match /orders/{orderId} {
+      allow read: if true;
+      allow create, update: if isValidId(orderId) && isValidOrder(incoming(request));
+      allow delete: if isValidId(orderId);
+    }
+
+    // --- Notification validation ---
+    function isValidNotification(data) {
+      return data.keys().hasAll(['id', 'tableNumber', 'requestType', 'time'])
+        && data.id is string && data.id.size() <= 100
+        && isNumeric(data.tableNumber) && data.tableNumber >= 1
+        && data.requestType is string && data.requestType.size() <= 200
+        && data.time is string && data.time.size() <= 100
+        && (!data.keys().contains('timestamp') || isNumeric(data.timestamp));
+    }
+
+    match /notifications/{notificationId} {
+      allow read: if true;
+      allow create: if isValidId(notificationId) && isValidNotification(incoming(request));
+      allow delete: if isValidId(notificationId);
+    }
+  }
+}

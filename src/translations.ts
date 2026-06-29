@@ -114,18 +114,28 @@ export const itemTranslations: Record<string, {
       tags: ['Ассорти', 'К вину']
     }
   },
-  'san-sebastian': {
+  'cheesecake': {
     ru: {
-      name: 'Чизкейк Сан-Себастьян',
-      description: 'Легендарный баскский чизкейк с нежным кремовым центром и карамельной корочкой. Подается с теплым ягодным соусом.',
+      name: 'Канонический чизкейк',
+      description: 'Классический нежный чизкейк с бархатистой нежной текстурой. Подается с нашим фирменным теплым ягодным соусом.',
       tags: ['Сладкое', 'Бестселлер']
+    },
+    en: {
+      name: 'Classic Cheesecake',
+      description: 'A classic rich and smooth cheesecake with a velvety texture. Served with our signature warm berry sauce.',
+      tags: ['Dessert', 'Bestseller']
     }
   },
-  'sea-salt-brownie': {
+  'tiramisu': {
     ru: {
-      name: 'Брауни с морской солью',
-      description: 'Насыщенный шоколадный брауни с фисташками и фундуком, оттененный крупными кристаллами соли Maldon для глубины вкуса.',
+      name: 'Тирамису',
+      description: 'Восхитительный итальянский десерт на основе маскарпоне, печенья савоярди, крепкого кофе и щепотки какао.',
       tags: ['Сладкое']
+    },
+    en: {
+      name: 'Tiramisu',
+      description: 'An exquisite Italian dessert. Espresso-soaked savoiardi ladyfingers layered with whipped mascarpone cream and dusted with cocoa.',
+      tags: ['Dessert']
     }
   },
   'espresso': {
@@ -336,7 +346,9 @@ export const uiTranslations = {
     selectLanguage: 'ენა / Language / Язык',
     qrTitle: 'ციფრული მენიუს QR კოდი',
     qrInstructions: 'დაასკანერეთ კამერით მენიუს სანახავად',
-    qrDesc: 'დაბეჭდეთ ეს კოდი და განათავსეთ მაგიდებზე, რათა სტუმრებმა მარტივად გახსნან მენიუ ტელეფონით.'
+    qrDesc: 'დაბეჭდეთ ეს კოდი და განათავსეთ მაგიდებზე, რათა სტუმრებმა მარტივად გახსნან მენიუ ტელეფონით.',
+    addToOrderBtn: 'დამატება',
+    outOfStock: 'დროებით ამოწურულია'
   },
   en: {
     welcome: 'Welcome',
@@ -381,7 +393,9 @@ export const uiTranslations = {
     selectLanguage: 'Language',
     qrTitle: 'Digital Menu QR Code',
     qrInstructions: 'Scan with camera to view the menu',
-    qrDesc: 'Print this code and place it on your tables so guests can open the menu easily on their phones.'
+    qrDesc: 'Print this code and place it on your tables so guests can open the menu easily on their phones.',
+    addToOrderBtn: 'Add to Order',
+    outOfStock: 'Out of Stock'
   },
   ru: {
     welcome: 'Добро пожаловать',
@@ -426,7 +440,9 @@ export const uiTranslations = {
     selectLanguage: 'Выбрать язык',
     qrTitle: 'QR-код Цифрового Меню',
     qrInstructions: 'Сканируйте камерой для просмотра меню',
-    qrDesc: 'Распечатайте этот код и разместите его на столах, чтобы гости могли легко открыть меню на своем телефоне.'
+    qrDesc: 'Распечатайте этот код и разместите его на столах, чтобы гости могли легко открыть меню на своем телефоне.',
+    addToOrderBtn: 'Добавить',
+    outOfStock: 'Нет в наличии'
   }
 };
 
