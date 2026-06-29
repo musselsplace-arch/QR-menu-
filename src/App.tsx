@@ -468,11 +468,12 @@ export default function App() {
     } else {
       // Fallback: create new order
       const targetTable = tables.find(t => t.number === tableNumber) || tables[0];
+      const tableId = targetTable ? targetTable.id : `tbl-${tableNumber}`;
       const orderId = 'ord-' + Math.random().toString(36).substring(2, 9);
       const totalPrice = newItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
       const newOrder: Order = {
         id: orderId,
-        tableId: targetTable.id,
+        tableId,
         tableNumber,
         items: newItems,
         totalPrice,

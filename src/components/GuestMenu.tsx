@@ -673,7 +673,8 @@ export default function GuestMenu({
     } else {
       // Create NEW order
       const targetTableObj = tables.find(t => t.number === selectedTableNumber) || tables[0];
-      onSubmitOrder(targetTableObj.id, selectedTableNumber, cart);
+      const tableId = targetTableObj ? targetTableObj.id : `tbl-${selectedTableNumber}`;
+      onSubmitOrder(tableId, selectedTableNumber, cart);
     }
 
     clearCart();
@@ -1598,8 +1599,8 @@ export default function GuestMenu({
           </div>
         </div>
 
-        {/* Sticky Search & filters panel */}
-        <div className={`sticky top-0 z-30 -mx-4 px-4 py-3 -mt-4 mb-2 space-y-2.5 transition-colors duration-300 border-b ${
+        {/* Non-sticky Search & filters panel */}
+        <div className={`relative z-30 -mx-4 px-4 py-3 -mt-4 mb-2 space-y-2.5 transition-colors duration-300 border-b ${
           theme === 'dark'
             ? 'bg-slate-950/95 border-slate-850/80 shadow-md shadow-slate-950/40 text-slate-100'
             : 'bg-slate-50/95 border-slate-200/40 text-slate-900'
@@ -2221,7 +2222,48 @@ export default function GuestMenu({
 
       {/* 9. FLOATING BOTTOM BILL CHECK INFOGRAPHIC BAR (FLOATING ACTION) */}
       {cart.length > 0 && (
-        <div className="absolute bottom-4 inset-x-4 z-40">
+        <div className="absolute bottom-4 inset-x-4 z-40 flex flex-col gap-1.5">
+          {/* Circular product avatars tray floating above the bar */}
+          <div className="flex gap-2 overflow-x-auto scrollbar-none items-center bg-slate-900/90 backdrop-blur-md p-2 rounded-2xl border border-slate-800 shadow-xl max-w-full">
+            <span className="text-[9px] font-black uppercase text-amber-500 tracking-wider pl-1 pr-1.5 border-r border-slate-800 shrink-0 select-none">
+              {lang === 'ka' ? 'არჩეული:' : 'Selected:'}
+            </span>
+            <div className="flex gap-1.5 overflow-x-auto scrollbar-none items-center pr-2">
+              {cart.map((cartItem) => {
+                const itemInfo = items.find(i => i.id === cartItem.menuItemId);
+                return (
+                  <motion.div 
+                    key={cartItem.id} 
+                    whileTap={{ scale: 0.9 }}
+                    className="relative shrink-0 cursor-pointer flex items-center gap-1.5 bg-slate-950 border border-slate-800 py-1 pl-1 pr-2 rounded-full"
+                    onClick={() => setIsCartSheetOpen(true)}
+                  >
+                    {itemInfo?.image ? (
+                      <img 
+                        src={itemInfo.image} 
+                        alt={cartItem.name} 
+                        className="w-6 h-6 rounded-full object-cover border border-amber-500/50 bg-slate-900"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <div className="w-6 h-6 rounded-full bg-slate-900 flex items-center justify-center text-[10px] border border-amber-500/50">
+                        🍴
+                      </div>
+                    )}
+                    <div className="flex flex-col leading-none">
+                      <span className="text-[9px] font-bold text-slate-200 truncate max-w-[80px]">
+                        {cartItem.name}
+                      </span>
+                      <span className="text-[8px] font-black font-mono text-amber-400 mt-0.5">
+                        {cartItem.quantity}x • {cartItem.price * cartItem.quantity}₾
+                      </span>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+
           <motion.div
             key={cartTriggerCount}
             animate={cartTriggerCount > 0 ? {
