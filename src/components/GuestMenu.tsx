@@ -1452,81 +1452,68 @@ export default function GuestMenu({
       {menuStep === 'menu' && (
         <>
           {/* 3. SIMULATED CAMERA NOTCH FOR COMPACT MOBILE GRAPHIC LAYOUTS */}
-      {isSimulatedMobile && (
-        <div className="absolute top-0 inset-x-0 h-6 bg-slate-950 flex justify-center items-center z-50">
-          <div className="w-20 h-4 bg-black rounded-b-xl border border-slate-900 border-t-0 flex items-center justify-center">
-            <span className="w-2 h-2 rounded-full bg-slate-900"></span>
-          </div>
-        </div>
-      )}
-
-      {/* 4. MAIN CONTENT TABS ROUTER SYSTEM */}
-      <div className={`flex-1 flex flex-col h-full overflow-hidden transition-colors duration-300 ${
-        theme === 'dark' ? 'bg-slate-950' : 'bg-slate-50'
-      } ${
-        isSimulatedMobile ? 'pt-6' : 'pt-0'
-      }`}>
-
-        {/* ==================== HOME TAB SCREEN (SCREEN 2) ==================== */}
-        {currentTab === 'home' && (
-          <div className="flex-1 flex flex-col overflow-hidden">
-            {/* Top Header */}
-            <div className={`px-5 py-3 shrink-0 flex justify-between items-center transition-colors duration-300 ${
-              theme === 'dark' ? 'bg-slate-900 border-b border-slate-800/80' : 'bg-white border-b border-slate-100'
-            }`}>
-              <button 
-                onClick={() => {
-                  sessionStorage.removeItem('black_cat_category_selected');
-                  setMenuStep('categories');
-                }}
-                className={`py-1.5 px-3 rounded-full flex items-center gap-1 border border-transparent text-[10px] font-black uppercase transition-all cursor-pointer ${
-                  theme === 'dark' ? 'bg-slate-800/60 text-amber-400 hover:bg-slate-800' : 'bg-amber-500/10 text-amber-600 hover:bg-amber-500/20'
-                }`}
-              >
-                <ArrowLeft className="w-3.5 h-3.5" />
-                <span>{lang === 'ka' ? 'კატეგორიები' : 'Categories'}</span>
-              </button>
-              
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-black tracking-widest font-sans text-slate-900 dark:text-white uppercase">
-                  Bistro Menu
-                </span>
-                <span className="text-xs animate-bounce">🍽️</span>
-              </div>
-
-              {/* Table and Admin Controls Info Badges */}
-              <div className="flex items-center gap-1.5">
-                {/* Admin Access Button */}
-                <button
-                  onClick={onOpenAdmin}
-                  className={`text-[9px] font-black px-2.5 py-1.5 rounded-full flex items-center gap-1 transition-all border border-transparent cursor-pointer ${
-                    theme === 'dark' ? 'bg-slate-800 hover:bg-slate-750 text-amber-400' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                  }`}
-                >
-                  <Lock className="w-3 h-3 text-amber-500" />
-                  <span>{lang === 'ka' ? 'ადმინი' : 'Admin'}</span>
-                </button>
-
-                {/* Table Info Badge */}
-                <button
-                  onClick={() => setIsTableSelectorOpen(true)}
-                  className={`text-[9px] font-black px-2.5 py-1.5 rounded-full flex items-center gap-1 transition-all border-none cursor-pointer ${
-                    theme === 'dark' ? 'bg-slate-800 text-amber-400' : 'bg-slate-100 text-slate-700'
-                  }`}
-                >
-                  <TableIcon className="w-3 h-3" />
-                  <span>#{selectedTableNumber}</span>
-                </button>
+          {isSimulatedMobile && (
+            <div className="absolute top-0 inset-x-0 h-6 bg-slate-950 flex justify-center items-center z-50">
+              <div className="w-20 h-4 bg-black rounded-b-xl border border-slate-900 border-t-0 flex items-center justify-center">
+                <span className="w-2 h-2 rounded-full bg-slate-900"></span>
               </div>
             </div>
+          )}
+
+          {/* Top Header - Rendered outside of a separate flex-1 scroll container to keep it as a clean header */}
+          <div className={`px-5 py-3 shrink-0 flex justify-between items-center transition-colors duration-300 ${
+            theme === 'dark' ? 'bg-slate-900 border-b border-slate-800/80 text-slate-100' : 'bg-white border-b border-slate-100 text-slate-900'
+          } ${
+            isSimulatedMobile ? 'pt-8' : 'pt-3'
+          }`}>
+            <button 
+              onClick={() => {
+                sessionStorage.removeItem('black_cat_category_selected');
+                setMenuStep('categories');
+              }}
+              className={`py-1.5 px-3 rounded-full flex items-center gap-1 border border-transparent text-[10px] font-black uppercase transition-all cursor-pointer ${
+                theme === 'dark' ? 'bg-slate-800/60 text-amber-400 hover:bg-slate-800' : 'bg-amber-500/10 text-amber-600 hover:bg-amber-500/20'
+              }`}
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>{lang === 'ka' ? 'კატეგორიები' : 'Categories'}</span>
+            </button>
+            
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-black tracking-widest font-sans text-slate-900 dark:text-white uppercase">
+                Bistro Menu
+              </span>
+              <span className="text-xs animate-bounce">🍽️</span>
+            </div>
+
+            {/* Table and Admin Controls Info Badges */}
+            <div className="flex items-center gap-1.5">
+              {/* Admin Access Button */}
+              <button
+                onClick={onOpenAdmin}
+                className={`text-[9px] font-black px-2.5 py-1.5 rounded-full flex items-center gap-1 transition-all border border-transparent cursor-pointer ${
+                  theme === 'dark' ? 'bg-slate-800 hover:bg-slate-750 text-amber-400' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                }`}
+              >
+                <Lock className="w-3 h-3 text-amber-500" />
+                <span>{lang === 'ka' ? 'ადმინი' : 'Admin'}</span>
+              </button>
+
+              {/* Table Info Badge */}
+              <button
+                onClick={() => setIsTableSelectorOpen(true)}
+                className={`text-[9px] font-black px-2.5 py-1.5 rounded-full flex items-center gap-1 transition-all border-none cursor-pointer ${
+                  theme === 'dark' ? 'bg-slate-800 text-amber-400' : 'bg-slate-100 text-slate-700'
+                }`}
+              >
+                <TableIcon className="w-3 h-3" />
+                <span>#{selectedTableNumber}</span>
+              </button>
+            </div>
           </div>
-        )}
-      </div>
 
-      {/* DEPRECATED HEADER SPLIT */}
-
-      {/* 5. MAIN SCROLL CONTAINER */}
-      <div className="flex-1 overflow-y-auto pb-24 p-4 space-y-4">
+          {/* 5. MAIN SCROLL CONTAINER */}
+          <div className="flex-1 overflow-y-auto pb-24 p-4 space-y-4">
         
         {/* Service Call Bar */}
         <div className={`p-3.5 rounded-2xl border transition-all flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 ${

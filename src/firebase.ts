@@ -3,15 +3,15 @@ import {
   getFirestore, 
   collection, 
   doc, 
-  setDoc, 
+  setDoc as fSetDoc, 
   getDocs, 
   onSnapshot, 
-  updateDoc, 
+  updateDoc as fUpdateDoc, 
   deleteDoc, 
   query, 
   orderBy, 
-  writeBatch,
-  addDoc
+  writeBatch as fWriteBatch,
+  addDoc as fAddDoc
 } from 'firebase/firestore';
 import firebaseConfig from '../firebase-applet-config.json';
 
@@ -64,17 +64,82 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
   throw new Error(JSON.stringify(errInfo));
 }
 
-// Export firestore utilities for direct clean access
+// Helper to recursively remove undefined fields
+export function removeUndefined<T>(obj: T): T {
+  if (obj === null || obj === undefined) {
+    return obj;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(item => removeUndefined(item)) as any;
+  }
+  if (typeof obj === 'object') {
+    const cleanObj: any = {};
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        const val = obj[key];
+        if (val !== undefined) {
+          cleanObj[key] = removeUndefined(val);
+        }
+      }
+    }
+    return cleanObj;
+  }
+  return obj;
+}
+
+// Wrap setDoc to strip undefined properties
+export function setDoc(reference: any, data: any, options?: any) {
+  const cleanData = removeUndefined(data);
+  return options ? fSetDoc(reference, cleanData, options) : fSetDoc(reference, cleanData);
+}
+
+// Wrap updateDoc to strip undefined properties
+export function updateDoc(reference: any, data: any, ...moreArgs: any[]) {
+  const cleanData = removeUndefined(data);
+  return (fUpdateDoc as any)(reference, cleanData, ...moreArgs);
+}
+
+// Wrap addDoc to strip undefined properties
+export function addDoc(reference: any, data: any) {
+  const cleanData = removeUndefined(data);
+  return fAddDoc(reference, cleanData);
+}
+
+// Wrap writeBatch to strip undefined properties
+export function writeBatch(firestore: any) {
+  const batch = fWriteBatch(firestore);
+  return {
+    set(documentRef: any, data: any, options?: any) {
+      const cleanData = removeUndefined(data);
+      if (options) {
+        batch.set(documentRef, cleanData, options);
+      } else {
+        batch.set(documentRef, cleanData);
+      }
+      return this;
+    },
+    update(documentRef: any, data: any) {
+      const cleanData = removeUndefined(data);
+      batch.update(documentRef, cleanData);
+      return this;
+    },
+    delete(documentRef: any) {
+      batch.delete(documentRef);
+      return this;
+    },
+    commit() {
+      return batch.commit();
+    }
+  };
+}
+
+// Export other firestore utilities for direct clean access
 export {
   collection,
   doc,
-  setDoc,
   getDocs,
   onSnapshot,
-  updateDoc,
   deleteDoc,
   query,
-  orderBy,
-  writeBatch,
-  addDoc
+  orderBy
 };
