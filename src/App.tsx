@@ -392,19 +392,32 @@ export default function App() {
   // Reset core data handler (for testing)
   const handleGuestSubmitOrder = async (tableId: string, tableNumber: number, cartItems: CartItem[]) => {
     const orderId = 'ord-' + Math.random().toString(36).substring(2, 9);
+    const totalPrice = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    const timeString = new Date().toLocaleTimeString('ka-GE', { hour: '2-digit', minute: '2-digit' });
     const newOrder: Order = {
       id: orderId,
       tableId,
       tableNumber,
       items: cartItems,
-      totalPrice: cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0),
+      totalPrice,
       status: 'pending',
-      createdAt: new Date().toLocaleTimeString('ka-GE', { hour: '2-digit', minute: '2-digit' }),
+      createdAt: timeString,
       timestamp: Date.now()
     } as any;
     
     try {
       await setDoc(doc(db, 'orders', orderId), newOrder);
+
+      // Create a notification for the active notifications feed/panel
+      const notificationId = 'notif-ord-' + Math.random().toString(36).substring(2, 9);
+      const newNotif = {
+        id: notificationId,
+        tableNumber,
+        requestType: `🛒 ახალი შეკვეთა (${cartItems.length} პოზიცია, ${totalPrice} ₾)`,
+        time: timeString,
+        timestamp: Date.now()
+      };
+      await setDoc(doc(db, 'notifications', notificationId), newNotif);
     } catch (err) {
       handleFirestoreError(err, OperationType.CREATE, `orders/${orderId}`);
     }
@@ -412,6 +425,7 @@ export default function App() {
 
   const handleGuestAppendToOrder = async (tableNumber: number, newItems: CartItem[]) => {
     const activeOrder = orders.find(o => o.tableNumber === tableNumber && (o.status === 'pending' || o.status === 'accepted'));
+    const timeString = new Date().toLocaleTimeString('ka-GE', { hour: '2-digit', minute: '2-digit' });
     if (activeOrder) {
       const activeOrderCopy = { ...activeOrder };
       
@@ -437,6 +451,17 @@ export default function App() {
 
       try {
         await setDoc(doc(db, 'orders', activeOrderCopy.id), activeOrderCopy);
+
+        // Create a notification for the active notifications feed/panel
+        const notificationId = 'notif-ord-' + Math.random().toString(36).substring(2, 9);
+        const newNotif = {
+          id: notificationId,
+          tableNumber,
+          requestType: `🚀 შეკვეთის ჩამატება (${newItems.length} პოზიცია)`,
+          time: timeString,
+          timestamp: Date.now()
+        };
+        await setDoc(doc(db, 'notifications', notificationId), newNotif);
       } catch (err) {
         handleFirestoreError(err, OperationType.WRITE, `orders/${activeOrderCopy.id}`);
       }
@@ -444,18 +469,30 @@ export default function App() {
       // Fallback: create new order
       const targetTable = tables.find(t => t.number === tableNumber) || tables[0];
       const orderId = 'ord-' + Math.random().toString(36).substring(2, 9);
+      const totalPrice = newItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
       const newOrder: Order = {
         id: orderId,
         tableId: targetTable.id,
         tableNumber,
         items: newItems,
-        totalPrice: newItems.reduce((acc, item) => acc + item.price * item.quantity, 0),
+        totalPrice,
         status: 'pending',
-        createdAt: new Date().toLocaleTimeString('ka-GE', { hour: '2-digit', minute: '2-digit' }),
+        createdAt: timeString,
         timestamp: Date.now()
       } as any;
       try {
         await setDoc(doc(db, 'orders', orderId), newOrder);
+
+        // Create a notification for the active notifications feed/panel
+        const notificationId = 'notif-ord-' + Math.random().toString(36).substring(2, 9);
+        const newNotif = {
+          id: notificationId,
+          tableNumber,
+          requestType: `🛒 ახალი შეკვეთა (${newItems.length} პოზიცია, ${totalPrice} ₾)`,
+          time: timeString,
+          timestamp: Date.now()
+        };
+        await setDoc(doc(db, 'notifications', notificationId), newNotif);
       } catch (err) {
         handleFirestoreError(err, OperationType.CREATE, `orders/${orderId}`);
       }
@@ -545,13 +582,13 @@ export default function App() {
   }
 
   return (
-    <div className={`min-h-screen flex flex-col justify-start items-center transition-all duration-300 ${
-      activeRole === 'guest' ? 'bg-slate-950' : 'bg-[#FAF9F6]'
+    <div className={`flex flex-col justify-start items-center transition-all duration-300 ${
+      activeRole === 'guest' ? 'bg-slate-950 h-[100dvh] max-h-[100dvh] overflow-hidden' : 'bg-[#FAF9F6] min-h-screen'
     }`}>
       {/* Maximum-width wrapper for superb desktop look, fully responsive content on mobile */}
       <div className={`w-full flex flex-col bg-white dark:bg-slate-950 shadow-2xl relative transition-all duration-300 ${
         activeRole === 'guest' 
-          ? 'max-w-md min-h-screen shadow-2xl overflow-hidden' 
+          ? 'max-w-md h-full max-h-full overflow-hidden' 
           : 'max-w-3xl min-h-screen md:my-6 md:rounded-3xl border border-slate-100 shadow-xl overflow-hidden'
       }`}>
         {activeRole === 'guest' ? (

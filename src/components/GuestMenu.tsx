@@ -9,7 +9,7 @@ import {
   Sun, Moon, Lock, Compass, Bell, Leaf, Clock, Flame, Star, ArrowLeft, Menu, Home, User
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { db, collection, doc, setDoc, handleFirestoreError, OperationType } from '../firebase';
+import { db, collection, doc, setDoc, updateDoc, handleFirestoreError, OperationType } from '../firebase';
 
 // Elegant image lazy-loading component with glittering shimmer skeleton placeholder
 function ImageWithSkeleton({ src, alt, className }: { src: string; alt: string; className?: string }) {
@@ -257,19 +257,28 @@ export default function GuestMenu({
   const [isTableSelectorOpen, setIsTableSelectorOpen] = useState(false);
   const [isLocationVerified, setIsLocationVerified] = useState(false);
   const [activeServiceRequest, setActiveServiceRequest] = useState<string | null>(null);
-  const [cooldownTime, setCooldownTime] = useState(0);
+  const [waiterCooldown, setWaiterCooldown] = useState(0);
+  const [billCooldown, setBillCooldown] = useState(0);
 
-  // Tick down cooldown timer
+  // Tick down waiter cooldown timer
   useEffect(() => {
-    if (cooldownTime > 0) {
+    if (waiterCooldown > 0) {
       const t = setTimeout(() => {
-        setCooldownTime(prev => prev - 1);
+        setWaiterCooldown(prev => prev - 1);
       }, 1000);
       return () => clearTimeout(t);
-    } else {
-      setActiveServiceRequest(null);
     }
-  }, [cooldownTime]);
+  }, [waiterCooldown]);
+
+  // Tick down bill cooldown timer
+  useEffect(() => {
+    if (billCooldown > 0) {
+      const t = setTimeout(() => {
+        setBillCooldown(prev => prev - 1);
+      }, 1000);
+      return () => clearTimeout(t);
+    }
+  }, [billCooldown]);
 
   const handleVerifyLocation = () => {
     if (!navigator.geolocation) {
@@ -320,12 +329,15 @@ export default function GuestMenu({
   };
 
   const handleCallWaiter = async (requestType: string) => {
-    if (cooldownTime > 0) {
+    const isBill = requestType.includes('ანგარიშ') || requestType.includes('Bill');
+    const currentCooldown = isBill ? billCooldown : waiterCooldown;
+
+    if (currentCooldown > 0) {
       triggerDialog(
         lang === 'ka' ? '⏳ გთხოვთ მოიცადოთ' : '⏳ Please Wait',
         lang === 'ka' 
-          ? `გთხოვთ მოიცადოთ ${cooldownTime} წამი ახალ გამოძახებამდე.` 
-          : `Please wait ${cooldownTime}s before another request.`,
+          ? `გთხოვთ მოიცადოთ ${currentCooldown} წამი ახალ გამოძახებამდე.` 
+          : `Please wait ${currentCooldown}s before another request.`,
         'warning'
       );
       return;
@@ -343,13 +355,30 @@ export default function GuestMenu({
 
     try {
       await setDoc(doc(db, 'notifications', notifId), payload);
+      
+      // Update table status to 'service_requested' in Firestore
+      const targetTableObj = tables.find(t => t.number === selectedTableNumber);
+      if (targetTableObj) {
+        await updateDoc(doc(db, 'tables', targetTableObj.id), { status: 'service_requested' });
+      }
+
+      if (isBill) {
+        setBillCooldown(30);
+      } else {
+        setWaiterCooldown(30);
+      }
+
       setActiveServiceRequest(requestType);
-      setCooldownTime(30); // 30 seconds spam protection lock
+      
       triggerDialog(
         lang === 'ka' ? '🔔 გამოძახება გაგზავნილია' : '🔔 Call Sent',
-        lang === 'ka' 
-          ? `გამოძახება წარმატებით გაიგზავნა! მიმტანი მალე მოვა თქვენს მაგიდასთან (${selectedTableNumber}).` 
-          : `Request sent successfully! A waiter will arrive at your table (${selectedTableNumber}) shortly.`,
+        isBill
+          ? (lang === 'ka' 
+              ? `ანგარიშის მოთხოვნა წარმატებით გაიგზავნა! ოფიციანტი მალე მოგიტანთ ანგარიშს (#${selectedTableNumber} მაგიდასთან).` 
+              : `Bill request sent successfully! A waiter will bring the bill to your table (#${selectedTableNumber}) shortly.`)
+          : (lang === 'ka' 
+              ? `გამოძახება წარმატებით გაიგზავნა! მიმტანი მალე მოვა თქვენს მაგიდასთან (${selectedTableNumber}).` 
+              : `Request sent successfully! A waiter will arrive at your table (${selectedTableNumber}) shortly.`),
         'success'
       );
     } catch (err) {
@@ -1521,18 +1550,18 @@ export default function GuestMenu({
           <div className="flex gap-2">
             <button
               onClick={() => handleCallWaiter(lang === 'ka' ? '🛎️ მიმტანის გამოძახება' : '🛎️ Call Waiter')}
-              disabled={cooldownTime > 0}
+              disabled={waiterCooldown > 0}
               className="flex-1 sm:flex-none py-2 px-3.5 bg-amber-600 hover:bg-amber-500 disabled:bg-slate-800 disabled:text-slate-500 text-white rounded-xl text-[10px] font-black cursor-pointer border-none transition-all active:scale-95 shadow-3xs flex items-center justify-center gap-1.5"
             >
               <span>🛎️</span>
               <span>{lang === 'ka' ? 'მიმტანის გამოძახება' : 'Call Waiter'}</span>
-              {cooldownTime > 0 && activeServiceRequest?.includes('მიმტანის') && (
-                <span className="opacity-75 font-mono">({cooldownTime}s)</span>
+              {waiterCooldown > 0 && (
+                <span className="opacity-75 font-mono">({waiterCooldown}s)</span>
               )}
             </button>
             <button
               onClick={() => handleCallWaiter(lang === 'ka' ? '🧾 ანგარიშის მოთხოვნა' : '🧾 Request Bill')}
-              disabled={cooldownTime > 0}
+              disabled={billCooldown > 0}
               className={`flex-1 sm:flex-none py-2 px-3.5 rounded-xl text-[10px] font-black cursor-pointer transition-all active:scale-95 border flex items-center justify-center gap-1.5 ${
                 theme === 'dark'
                   ? 'bg-slate-800 hover:bg-slate-750 border-slate-700 text-amber-400 disabled:bg-slate-850 disabled:text-slate-600'
@@ -1541,8 +1570,8 @@ export default function GuestMenu({
             >
               <span>🧾</span>
               <span>{lang === 'ka' ? 'ანგარიშის მოთხოვნა' : 'Request Bill'}</span>
-              {cooldownTime > 0 && activeServiceRequest?.includes('ანგარიშის') && (
-                <span className="opacity-75 font-mono">({cooldownTime}s)</span>
+              {billCooldown > 0 && (
+                <span className="opacity-75 font-mono">({billCooldown}s)</span>
               )}
             </button>
           </div>
