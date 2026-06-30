@@ -405,6 +405,8 @@ export default function App() {
       timestamp: Date.now()
     } as any;
     
+    console.log("SUBMITTING ORDER PAYLOAD:", JSON.stringify(newOrder, null, 2));
+    
     try {
       await setDoc(doc(db, 'orders', orderId), newOrder);
 

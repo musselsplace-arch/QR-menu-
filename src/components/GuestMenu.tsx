@@ -6,7 +6,7 @@ import blackCatLogo from '../assets/images/black_cat_logo.jpg';
 import { 
   Search, Sparkles, ShoppingBag, Plus, Minus, ArrowRight, Table as TableIcon,
   ChevronDown, ChevronRight, Globe, Languages, Settings, Check, X, ShieldAlert, Circle, HelpCircle, AlertCircle,
-  Sun, Moon, Lock, Compass, Bell, Leaf, Clock, Flame, Star, ArrowLeft, Menu, Home, User
+  Sun, Moon, Lock, Compass, Bell, Leaf, Clock, Flame, Star, ArrowLeft, Menu, Home, User, LayoutGrid, Cat
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { db, collection, doc, setDoc, updateDoc, handleFirestoreError, OperationType } from '../firebase';
@@ -222,7 +222,11 @@ export default function GuestMenu({
       }
     }
     const stored = localStorage.getItem('black_cat_guest_table');
-    return stored ? parseInt(stored, 10) : 1; // Default table #1
+    if (stored) {
+      const parsed = parseInt(stored, 10);
+      if (!isNaN(parsed)) return parsed;
+    }
+    return 1; // Default table #1
   });
 
   // Listen to live changes in URL query param to update table
@@ -391,11 +395,29 @@ export default function GuestMenu({
     return orders.find(o => o.tableNumber === selectedTableNumber && (o.status === 'pending' || o.status === 'accepted'));
   }, [orders, selectedTableNumber]);
 
+  const latestCompletedOrderForCurrentTable = useMemo(() => {
+    const completedOrders = orders.filter(o => {
+      if (o.tableNumber !== selectedTableNumber || o.status !== 'completed') return false;
+      const ts = (o as any).timestamp;
+      if (ts) {
+        return (Date.now() - ts) < 7200000; // 2 hours
+      }
+      return true;
+    });
+    if (completedOrders.length === 0) return null;
+    return completedOrders.sort((a, b) => {
+      const tsA = (a as any).timestamp || 0;
+      const tsB = (b as any).timestamp || 0;
+      return tsB - tsA;
+    })[0];
+  }, [orders, selectedTableNumber]);
+
   // Option Picker Modal state for wine drinks
   const [optionPickerItem, setOptionPickerItem] = useState<MenuItem | null>(null);
 
   // Cart Sheet Overlay
   const [isCartSheetOpen, setIsCartSheetOpen] = useState(false);
+  const [isReceiptSheetOpen, setIsReceiptSheetOpen] = useState(false);
 
   // 2. Local Storage Syncs
   useEffect(() => {
@@ -1160,12 +1182,12 @@ export default function GuestMenu({
 
             <div className="space-y-2">
               <h2 className="text-2xl font-black text-slate-900 tracking-tight uppercase leading-none">
-                Thanks You
+                {lang === 'ka' ? 'გმადლობთ!' : 'Thank You'}
               </h2>
               <p className="text-xs text-slate-500 font-semibold leading-relaxed">
                 {lang === 'ka' 
-                  ? 'შეკვეთის განთავსებისთვის Pasta Pro-ში' 
-                  : 'for ordering at Pasta Pro'}
+                  ? 'შეკვეთის განთავსებისთვის Black Cat Bistro-ში' 
+                  : 'for ordering at Black Cat Bistro'}
               </p>
             </div>
 
@@ -1565,26 +1587,7 @@ export default function GuestMenu({
           </div>
         </div>
 
-        {/* Guest Ordering Info Banner */}
-        <div className="bg-amber-50/70 border border-amber-200/40 rounded-2xl p-3.5 flex items-start gap-3 shadow-3xs">
-          <div className="p-1.5 bg-amber-500/10 text-amber-600 rounded-lg shrink-0 mt-0.5 animate-bounce">
-            <Sparkles className="w-4 h-4" />
-          </div>
-          <div className="space-y-0.5">
-            <span className="text-[10px] text-amber-700 font-bold uppercase tracking-wider block font-sans">
-              {lang === 'ka' && '💡 ინფორმაცია სტუმრებისთვის'}
-              {lang === 'en' && '💡 Guest Information'}
-              {lang === 'ru' && '💡 Информация для гостей'}
-              {lang === 'custom' && '💡 Guest Information'}
-            </span>
-            <p className="text-[11px] text-slate-600 leading-relaxed font-semibold">
-              {lang === 'ka' && 'სურვილისამებრ, შეგიძლიათ შეკვეთა განახორციელოთ თავად - უბრალოდ დაამატეთ კერძები კალათაში და გააგზავნეთ!'}
-              {lang === 'en' && 'Optionally, you can place your order yourself - simply add items to the cart and send!'}
-              {lang === 'ru' && 'При желании вы можете оформить заказ самостоятельно - просто добавьте блюда в корзину и отправьте!'}
-              {lang === 'custom' && 'Optionally, you can place your order yourself - simply add items to the cart and send!'}
-            </p>
-          </div>
-        </div>
+
 
         {/* Non-sticky Search & filters panel */}
         <div className={`relative z-30 -mx-4 px-4 py-3 -mt-4 mb-2 space-y-2.5 transition-colors duration-300 border-b ${
@@ -1646,7 +1649,7 @@ export default function GuestMenu({
                       : 'bg-white text-slate-500 border-slate-100 shadow-3xs'
                 }`}
               >
-                {lang === 'ka' ? '#ყველა' : '#All'}
+                {lang === 'ka' ? 'ყველა' : 'All'}
               </button>
               {allTags.map(tag => (
                 <button
@@ -1660,7 +1663,7 @@ export default function GuestMenu({
                         : 'bg-white text-slate-500 border-slate-150 shadow-3xs'
                   }`}
                 >
-                  #{tag}
+                  {tag}
                 </button>
               ))}
             </div>
@@ -1788,13 +1791,19 @@ export default function GuestMenu({
                               isActive 
                                 ? 'border-amber-500 shadow-xl shadow-amber-500/10' 
                                 : 'border-white shadow-md shadow-black/5'
-                            } bg-white transition-all duration-300`}>
-                              <img 
-                                src={item.image || "https://images.unsplash.com/photo-1546549032-9571cd6b27df?auto=format&fit=crop&w=150&h=150&q=80"} 
-                                alt={item.name}
-                                className="w-full h-full object-cover select-none pointer-events-none"
-                                referrerPolicy="no-referrer"
-                              />
+                            } bg-white transition-all duration-300 flex items-center justify-center`}>
+                              {item.image ? (
+                                <img 
+                                  src={item.image} 
+                                  alt={item.name}
+                                  className="w-full h-full object-cover select-none pointer-events-none"
+                                  referrerPolicy="no-referrer"
+                                />
+                              ) : (
+                                <div className="w-full h-full bg-slate-900 text-amber-500 flex items-center justify-center">
+                                  <Cat className="w-10 h-10" />
+                                </div>
+                              )}
                             </div>
                             {isActive && (
                               <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 bg-amber-600 text-white text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider font-mono shadow-xs">
@@ -1956,17 +1965,19 @@ export default function GuestMenu({
                   </div>
 
                   {/* Image Block (Right) */}
-                  {item.image && (
-                    <div className={`w-16 h-16 sm:w-18 sm:h-18 rounded-xl overflow-hidden shrink-0 select-none shadow-sm relative transition-colors duration-300 ${
-                      theme === 'dark' ? 'border border-slate-800 bg-slate-850' : 'border border-slate-100/80 bg-slate-100'
-                    }`}>
+                  <div className={`w-16 h-16 sm:w-18 sm:h-18 rounded-xl overflow-hidden shrink-0 select-none shadow-sm relative transition-colors duration-300 flex items-center justify-center ${
+                    theme === 'dark' ? 'border border-slate-800 bg-slate-900 text-amber-500' : 'border border-slate-150 bg-slate-50 text-amber-600'
+                  }`}>
+                    {item.image ? (
                       <ImageWithSkeleton
                         src={item.image}
                         alt={item.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
-                    </div>
-                  )}
+                    ) : (
+                      <Cat className="w-8 h-8 opacity-80" />
+                    )}
+                  </div>
                 </motion.div>
               ))}
             </div>
@@ -2119,14 +2130,21 @@ export default function GuestMenu({
                     initial={{ scale: 0.8, x: 60, opacity: 0 }}
                     animate={{ scale: 1.25, x: 0, opacity: 1 }}
                     transition={{ type: 'spring', damping: 20, stiffness: 140, delay: 0.1 }}
-                    className="absolute right-[-15px] bottom-[-30px] w-48 h-48 sm:w-56 sm:h-56 rounded-full overflow-hidden border-4 border-slate-950 shadow-2xl shadow-black/85 z-20 bg-slate-900 shrink-0 select-none pointer-events-none"
+                    className="absolute right-[-15px] bottom-[-30px] w-48 h-48 sm:w-56 sm:h-56 rounded-full overflow-hidden border-4 border-slate-950 shadow-2xl shadow-black/85 z-20 bg-slate-900 shrink-0 select-none pointer-events-none flex items-center justify-center text-amber-500"
                   >
-                    <img
-                      src={selectedItem.image || "https://images.unsplash.com/photo-1546549032-9571cd6b27df?auto=format&fit=crop&w=300&h=300&q=80"}
-                      alt={transItem.name}
-                      className="w-full h-full object-cover"
-                      referrerPolicy="no-referrer"
-                    />
+                    {selectedItem.image ? (
+                      <img
+                        src={selectedItem.image}
+                        alt={transItem.name}
+                        className="w-full h-full object-cover"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-slate-900 flex flex-col items-center justify-center text-amber-500 gap-1.5 p-4">
+                        <Cat className="w-16 h-16 animate-pulse" />
+                        <span className="text-[9px] font-black uppercase tracking-widest font-mono text-slate-400">Black Cat</span>
+                      </div>
+                    )}
                   </motion.div>
                 </div>
 
@@ -2207,90 +2225,329 @@ export default function GuestMenu({
         })()}
       </AnimatePresence>
 
-      {/* 9. FLOATING BOTTOM BILL CHECK INFOGRAPHIC BAR (FLOATING ACTION) */}
-      {cart.length > 0 && (
-        <div className="absolute bottom-4 inset-x-4 z-40 flex flex-col gap-1.5">
-          {/* Circular product avatars tray floating above the bar */}
-          <div className="flex gap-2 overflow-x-auto scrollbar-none items-center bg-slate-900/90 backdrop-blur-md p-2 rounded-2xl border border-slate-800 shadow-xl max-w-full">
-            <span className="text-[9px] font-black uppercase text-amber-500 tracking-wider pl-1 pr-1.5 border-r border-slate-800 shrink-0 select-none">
-              {lang === 'ka' ? 'არჩეული:' : 'Selected:'}
-            </span>
-            <div className="flex gap-1.5 overflow-x-auto scrollbar-none items-center pr-2">
-              {cart.map((cartItem) => {
-                const itemInfo = items.find(i => i.id === cartItem.menuItemId);
-                return (
-                  <motion.div 
-                    key={cartItem.id} 
-                    whileTap={{ scale: 0.9 }}
-                    className="relative shrink-0 cursor-pointer flex items-center gap-1.5 bg-slate-950 border border-slate-800 py-1 pl-1 pr-2 rounded-full"
-                    onClick={() => setIsCartSheetOpen(true)}
-                  >
-                    {itemInfo?.image ? (
-                      <img 
-                        src={itemInfo.image} 
-                        alt={cartItem.name} 
-                        className="w-6 h-6 rounded-full object-cover border border-amber-500/50 bg-slate-900"
-                        referrerPolicy="no-referrer"
-                      />
-                    ) : (
-                      <div className="w-6 h-6 rounded-full bg-slate-900 flex items-center justify-center text-[10px] border border-amber-500/50">
-                        🍴
+      {/* 9. FLOATING BOTTOM OPERATIONS DOCK */}
+      {(menuStep === 'menu' || cart.length > 0 || activeOrderForCurrentTable || latestCompletedOrderForCurrentTable) && (
+        <div className="absolute bottom-4 inset-x-4 z-40 flex flex-col gap-1.5 select-none font-sans">
+          
+          {/* A. Dynamic Info Tray above the primary bar */}
+          {/* If there are items in the cart, show the Cart items avatars tray */}
+          {cart.length > 0 && (
+            <div className="flex gap-2 overflow-x-auto scrollbar-none items-center bg-slate-900/90 backdrop-blur-md p-2 rounded-2xl border border-slate-800 shadow-xl max-w-full">
+              <span className="text-[9px] font-black uppercase text-amber-500 tracking-wider pl-1 pr-1.5 border-r border-slate-800 shrink-0">
+                {lang === 'ka' ? 'არჩეული:' : 'Selected:'}
+              </span>
+              <div className="flex gap-1.5 overflow-x-auto scrollbar-none items-center pr-2">
+                {cart.map((cartItem) => {
+                  const itemInfo = items.find(i => i.id === cartItem.menuItemId);
+                  return (
+                    <motion.div 
+                      key={cartItem.id} 
+                      whileTap={{ scale: 0.9 }}
+                      className="relative shrink-0 cursor-pointer flex items-center gap-1.5 bg-slate-950 border border-slate-800 py-1 pl-1 pr-2 rounded-full"
+                      onClick={() => setIsCartSheetOpen(true)}
+                    >
+                      {itemInfo?.image ? (
+                        <img 
+                          src={itemInfo.image} 
+                          alt={cartItem.name} 
+                          className="w-6 h-6 rounded-full object-cover border border-amber-500/50 bg-slate-900"
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : (
+                        <div className="w-6 h-6 rounded-full bg-slate-900 flex items-center justify-center text-[10px] border border-amber-500/50 text-amber-400">
+                          <Cat className="w-3.5 h-3.5" />
+                        </div>
+                      )}
+                      <div className="flex flex-col leading-none">
+                        <span className="text-[9px] font-bold text-slate-200 truncate max-w-[85px]">
+                          {cartItem.name}
+                        </span>
+                        <span className="text-[8px] font-black font-mono text-amber-400 mt-0.5">
+                          {cartItem.quantity}x • {cartItem.price * cartItem.quantity}₾
+                        </span>
                       </div>
-                    )}
-                    <div className="flex flex-col leading-none">
-                      <span className="text-[9px] font-bold text-slate-200 truncate max-w-[80px]">
-                        {cartItem.name}
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* If there is an active order (but cart is empty), we can show a small active tray */}
+          {cart.length === 0 && activeOrderForCurrentTable && (
+            <div className="flex justify-between items-center bg-slate-900/90 backdrop-blur-md p-2 px-3.5 rounded-2xl border border-slate-800 shadow-xl max-w-full">
+              <div className="flex items-center gap-1.5 text-emerald-400">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping shrink-0" />
+                <span className="text-[9px] font-black uppercase tracking-wider">
+                  {lang === 'ka' ? 'შეკვეთა მიღებულია' : 'Order Received'}
+                </span>
+              </div>
+              <div className="text-[9px] font-semibold text-slate-400">
+                {lang === 'ka' ? 'მომზადების დრო:' : 'Prep time:'} ~{activeOrderForCurrentTable.estimatedWaitMinutes || 15} {lang === 'ka' ? 'წთ' : 'min'}
+              </div>
+            </div>
+          )}
+
+          {/* B. Primary Action Dock Row */}
+          <div className="flex gap-2 items-center">
+            
+            {/* 1. Visually Distinct "Back to Categories" FAB */}
+            {menuStep === 'menu' && (
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  sessionStorage.removeItem('black_cat_category_selected');
+                  setMenuStep('categories');
+                }}
+                className={`h-14 px-4 rounded-2xl flex flex-col justify-center items-center gap-0.5 border cursor-pointer shrink-0 transition-all shadow-lg active:scale-95 ${
+                  theme === 'dark' 
+                    ? 'bg-gradient-to-b from-slate-900 to-slate-950 border-slate-800 text-slate-200 hover:border-amber-500/30' 
+                    : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                }`}
+              >
+                <LayoutGrid className="w-4.5 h-4.5 text-amber-500" />
+                <span className="text-[8px] font-black uppercase tracking-wider">
+                  {lang === 'ka' ? 'მენიუ' : 'Categories'}
+                </span>
+              </motion.button>
+            )}
+
+            {/* 2. Main Interactive Bar */}
+            <div className="flex-1">
+              {cart.length > 0 ? (
+                /* Scenario 1: Basket is Active */
+                <motion.div
+                  key="basket-bar"
+                  initial={{ scale: 0.95, y: 10 }}
+                  animate={{ scale: 1, y: 0 }}
+                  className="rounded-2xl border border-amber-600 bg-slate-950 text-slate-100 p-2 pl-4 pr-2 flex justify-between items-center shadow-lg shadow-amber-950/20 backdrop-blur-sm relative overflow-hidden h-14"
+                >
+                  <div className="absolute top-0 bottom-0 left-0 w-1 bg-gradient-to-b from-amber-500 to-orange-500 animate-pulse" />
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 animate-bounce">
+                      <ShoppingBag className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="text-[9px] text-slate-400 font-mono tracking-widest block uppercase font-bold">
+                        {lang === 'ka' ? 'ჩემი კალათა' : 'MY BASKET'}
                       </span>
-                      <span className="text-[8px] font-black font-mono text-amber-400 mt-0.5">
-                        {cartItem.quantity}x • {cartItem.price * cartItem.quantity}₾
+                      <span className="text-xs font-bold text-slate-100">
+                        {cart.length} {lang === 'ka' ? 'პოზიცია' : 'items'} • <span className="text-amber-400 font-mono tracking-tight font-black">{totalPrice} ₾</span>
                       </span>
                     </div>
-                  </motion.div>
-                );
-              })}
+                  </div>
+                  <button
+                    onClick={() => setIsCartSheetOpen(true)}
+                    className="h-10 px-4 bg-amber-600 hover:bg-amber-500 text-white text-[11px] font-black rounded-lg transition-all flex items-center gap-1 cursor-pointer border-none active:scale-98 shadow-sm uppercase shrink-0"
+                  >
+                    <span>{lang === 'ka' ? 'შეკვეთა' : 'ORDER'}</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </motion.div>
+              ) : activeOrderForCurrentTable ? (
+                /* Scenario 2: Active Bill/Receipt */
+                <motion.div
+                  key="receipt-bar"
+                  initial={{ scale: 0.95, y: 10 }}
+                  animate={{ scale: 1, y: 0 }}
+                  onClick={() => setIsReceiptSheetOpen(true)}
+                  className="rounded-2xl border border-emerald-600/60 bg-slate-950 text-slate-100 p-2 pl-4 pr-2 flex justify-between items-center shadow-lg shadow-emerald-950/20 backdrop-blur-sm relative overflow-hidden h-14 cursor-pointer hover:border-emerald-500 transition-colors"
+                >
+                  <div className="absolute top-0 bottom-0 left-0 w-1 bg-gradient-to-b from-emerald-500 to-teal-500" />
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 animate-pulse">
+                      <Clock className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="text-[9px] text-emerald-400 font-mono tracking-widest block uppercase font-black">
+                        {lang === 'ka' ? '🧾 აქტიური ჩეკი' : '🧾 ACTIVE BILL'}
+                      </span>
+                      <span className="text-xs font-bold text-slate-200">
+                        {lang === 'ka' ? 'გადასახდელია:' : 'To pay:'} <span className="text-emerald-400 font-mono tracking-tight font-black">{activeOrderForCurrentTable.totalPrice} ₾</span>
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsReceiptSheetOpen(true);
+                    }}
+                    className="h-10 px-4 bg-emerald-700 hover:bg-emerald-600 text-white text-[11px] font-black rounded-lg transition-all flex items-center gap-1 cursor-pointer border-none active:scale-98 shadow-sm uppercase shrink-0"
+                  >
+                    <span>{lang === 'ka' ? 'დეტალები' : 'DETAILS'}</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </motion.div>
+              ) : latestCompletedOrderForCurrentTable ? (
+                /* Scenario 3: Order Paid/Completed */
+                <motion.div
+                  key="paid-bar"
+                  initial={{ scale: 0.95, y: 10 }}
+                  animate={{ scale: 1, y: 0 }}
+                  className="rounded-2xl border border-emerald-500 bg-emerald-950 text-emerald-100 p-2 px-4 flex justify-between items-center shadow-lg relative overflow-hidden h-14"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-300">
+                      <Check className="w-5 h-5 animate-bounce" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-black uppercase tracking-wider block font-sans">
+                        {lang === 'ka' ? 'შეკვეთა გადახდილია! 💚' : 'ORDER PAID! 💚'}
+                      </span>
+                      <span className="text-[10px] text-emerald-300 font-medium font-sans">
+                        {lang === 'ka' ? 'მადლობა სტუმრობისთვის!' : 'Thank you for visiting!'}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="bg-emerald-900/50 text-emerald-200 text-[10px] font-mono px-2.5 py-1 rounded-lg border border-emerald-800/80 uppercase font-bold shrink-0">
+                    {lang === 'ka' ? 'დასრულდა' : 'Done'}
+                  </div>
+                </motion.div>
+              ) : null}
             </div>
+
           </div>
-
-          <motion.div
-            key={cartTriggerCount}
-            animate={cartTriggerCount > 0 ? {
-              scale: [1, 1.08, 0.95, 1],
-              y: [0, -6, 2, 0]
-            } : {}}
-            transition={{ duration: 0.4, ease: "easeInOut" }}
-            initial={{ scale: 0.95, y: 15 }}
-            className="rounded-2xl border border-amber-600 bg-slate-950 text-slate-100 p-2 pl-4 pr-2 flex justify-between items-center shadow-lg shadow-amber-950/20 backdrop-blur-sm relative overflow-hidden h-14"
-          >
-            {/* Pulsing decoration */}
-            <div className="absolute top-0 bottom-0 left-0 w-1 bg-gradient-to-b from-amber-500 to-orange-500 animate-pulse" />
-
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 animate-bounce">
-                <ShoppingBag className="w-4 h-4" />
-              </div>
-              <div>
-                <span className="text-[10px] text-slate-400 font-mono tracking-widest block uppercase font-bold">
-                  {lang === 'ka' && 'ჩემი კალათა'}
-                  {lang === 'en' && 'MY BASKET'}
-                  {lang === 'ru' && 'МОЯ КОРЗИНА'}
-                  {lang === 'custom' && 'BASKET'}
-                </span>
-                <span className="text-xs font-bold text-slate-100">
-                  {cart.length} პოზიცია • <span className="text-amber-500 font-mono tracking-tight font-black">{totalPrice} ₾</span>
-                </span>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setIsCartSheetOpen(true)}
-              className="h-10 px-4 bg-amber-600 hover:bg-amber-500 text-white text-[11px] font-black rounded-lg transition-all flex items-center gap-1 cursor-pointer border-none active:scale-98 shadow-sm"
-            >
-              <span>{lang === 'ka' ? 'შეკვეთა' : 'ORDER'}</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </motion.div>
         </div>
       )}
+
+      {/* 11. EXPANDED RECEIPT / BILL DETAILS DRAWER (BOTTOM SHEET SCREEN) */}
+      <AnimatePresence>
+        {isReceiptSheetOpen && activeOrderForCurrentTable && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsReceiptSheetOpen(false)}
+            className="absolute inset-0 bg-black/60 z-50 flex items-end justify-center"
+          >
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              onClick={(e) => e.stopPropagation()}
+              className={`w-full rounded-t-3xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl border transition-colors duration-300 ${
+                theme === 'dark' ? 'bg-slate-900 border-slate-800 text-slate-100' : 'bg-white border-slate-100 text-slate-900'
+              }`}
+            >
+              {/* Header */}
+              <div className="p-4 bg-emerald-950 text-white flex justify-between items-center border-b border-emerald-900 shrink-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">🧾</span>
+                  <h3 className="text-xs font-black uppercase tracking-widest font-mono text-emerald-300">
+                    {lang === 'ka' ? 'ჩემი აქტიური ჩეკი' : 'My Active Bill Receipt'}
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setIsReceiptSheetOpen(false)}
+                  className="p-1 px-2.5 py-1.5 rounded-lg bg-emerald-900 text-emerald-200 border-none cursor-pointer hover:bg-emerald-800"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Receipt Content */}
+              <div className="p-5 flex-1 overflow-y-auto space-y-5">
+                
+                {/* Visual Receipt Design */}
+                <div className={`p-5 rounded-2xl border-2 border-dashed relative overflow-hidden space-y-4 ${
+                  theme === 'dark' ? 'bg-slate-950/40 border-slate-850' : 'bg-slate-50 border-slate-200'
+                }`}>
+                  <div className="text-center pb-2 border-b border-dashed border-slate-700/35">
+                    <span className="text-xs font-black tracking-widest font-mono block uppercase">
+                      Black Cat Bistro 🐈‍⬛
+                    </span>
+                    <span className="text-[10px] text-slate-400 block font-mono mt-0.5">
+                      {lang === 'ka' ? `მაგიდა #${selectedTableNumber} • ჩეკის დეტალები` : `Table #${selectedTableNumber} • Active Receipt`}
+                    </span>
+                    <span className="text-[9px] text-slate-500 block font-mono mt-0.5">
+                      {activeOrderForCurrentTable.createdAt ? `${lang === 'ka' ? 'დრო:' : 'Time:'} ${activeOrderForCurrentTable.createdAt}` : ''}
+                    </span>
+                  </div>
+
+                  {/* Items list */}
+                  <div className="space-y-3 font-mono">
+                    {activeOrderForCurrentTable.items.map((orderedItem) => (
+                      <div key={orderedItem.id} className="flex justify-between items-start text-xs">
+                        <div className="space-y-0.5 max-w-[70%]">
+                          <span className="font-bold text-slate-300 dark:text-slate-250 block">
+                            {orderedItem.name}
+                          </span>
+                          {orderedItem.selectedOption && orderedItem.selectedOption !== 'standard' && (
+                            <span className="text-[8px] bg-slate-800 text-slate-400 px-1 py-0.2 rounded font-mono uppercase">
+                              {orderedItem.selectedOption === 'glass' ? (lang === 'ka' ? 'ჭიქა' : 'Glass') : (lang === 'ka' ? 'ბოთლი' : 'Bottle')}
+                            </span>
+                          )}
+                          {orderedItem.note && (
+                            <span className="text-[9px] text-slate-400 italic block">
+                              📝 {orderedItem.note}
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          <span className="text-slate-400 block">
+                            {orderedItem.quantity}x {orderedItem.price}₾
+                          </span>
+                          <span className="font-bold text-amber-500 block mt-0.5">
+                            {orderedItem.price * orderedItem.quantity}₾
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Totals */}
+                  <div className="pt-3 border-t border-dashed border-slate-700/35 space-y-2">
+                    <div className="flex justify-between text-[11px] font-mono text-slate-400">
+                      <span>{lang === 'ka' ? 'პოზიციები:' : 'Total Items:'}</span>
+                      <span>{activeOrderForCurrentTable.items.reduce((sum, i) => sum + i.quantity, 0)}</span>
+                    </div>
+                    <div className="flex justify-between text-[11px] font-mono text-slate-400">
+                      <span>{lang === 'ka' ? 'დღგ (0%):' : 'Tax (0%):'}</span>
+                      <span>0.00 ₾</span>
+                    </div>
+                    <div className="flex justify-between text-sm font-black pt-1">
+                      <span>{lang === 'ka' ? 'სულ გადასახდელი:' : 'Grand Total:'}</span>
+                      <span className="text-emerald-500 font-mono tracking-tight text-base">
+                        {activeOrderForCurrentTable.totalPrice} ₾
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Cooldown Info/Billing actions */}
+                <div className="space-y-3">
+                  <button
+                    onClick={async () => {
+                      setIsReceiptSheetOpen(false);
+                      await handleCallWaiter(lang === 'ka' ? '🧾 ანგარიშის მოთხოვნა' : '🧾 Request Bill');
+                    }}
+                    disabled={billCooldown > 0}
+                    className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-850 disabled:text-slate-600 text-white rounded-xl text-xs font-black cursor-pointer border-none transition-all active:scale-95 shadow-md flex items-center justify-center gap-1.5 uppercase"
+                  >
+                    <span>🧾</span>
+                    <span>{lang === 'ka' ? 'ანგარიშის მოთხოვნა ოფიციანტთან' : 'Request Printed Bill'}</span>
+                    {billCooldown > 0 && (
+                      <span className="opacity-75 font-mono">({billCooldown}s)</span>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={() => setIsReceiptSheetOpen(false)}
+                    className={`w-full py-3 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+                      theme === 'dark' 
+                        ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750' 
+                        : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-150'
+                    }`}
+                  >
+                    {lang === 'ka' ? 'დახურვა' : 'Close'}
+                  </button>
+                </div>
+
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
         </>
       )}
 
